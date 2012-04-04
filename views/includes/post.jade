@@ -1,0 +1,58 @@
+- for (var key = 0; key < posts.length; key++)
+	- var post = posts[key]
+	- if (post.images[0]){
+		#hero
+			- if(!(post.images[0].indexOf("video") < 0)) {
+				- var videoPlayer = post.images[0].split(" ");
+				iframe(src="http://player.vimeo.com/video/#{videoPlayer[1]}",width="680",height="452",frameborder="0",webkitAllowFullScreen,mozallowfullscreen,allowFullScreen)
+				img#histoImg.heroImg(src="http://willruby.com/i/blank.png")
+			- } else {
+				img#histoImg.heroImg(src="http://willruby.com/i/#{post.images[0]}")
+			- }
+			- if (post.images.length > 1)
+			#loading
+				| loading...
+	- } else {
+		.rule
+	- }
+	.block
+		.two
+			- if (post.title.length)
+				.title
+					h1
+						| #{post.displayTitle}
+					- if (post.tags[0].length && post.tags[0] != "other" && post.tags[0] != "process")	
+						a(href="http://willruby.com/tag/#{post.tags[0]}").tags !{post.displayTags[0]}
+			- if (post.post.length)
+				.copy
+					!{post.post}
+		- if (post.images.length > 1 || post.sidebar.length)
+			.one
+				- if (post.images.length > 1)
+					- var i = 0;
+					- if (post.process == "true")	
+						a(href="http://willruby.com/process/#{post.title.replace(/ /g,'_')}").tags.processLink Process Work
+					- post.images.forEach(function(item){
+						- if(item.indexOf("video") < 0){
+							-if(i == 0)
+								a.thumbs(href="http://willruby.com/i/#{item}")
+									img.active(src="http://willruby.com/i/t/#{item}")
+							-else
+								a.thumbs(href="http://willruby.com/i/#{item}")
+									img(src="http://willruby.com/i/t/#{item}")
+						- } else {
+							- var videoPlayer = item.split(" ");
+							-if(i == 0)
+								a.thumbs(href="http://vimeo.com/#{videoPlayer[1]}")
+									img.active(src="http://willruby.com/i/t/#{videoPlayer[2]}")
+							- else
+								a.thumbs(href="http://vimeo.com/#{videoPlayer[1]}")
+									img(src="http://willruby.com/i/t/#{videoPlayer[2]}")
+						- }
+						-i++
+					- })
+				- if (post.sidebar.length)
+					- if (post.tags[0].length && post.tags[0] != "other" && post.tags[0] != "process")	
+						#spacer
+					!{post.sidebar}
+		.clear

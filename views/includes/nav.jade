@@ -1,0 +1,31 @@
+#nav
+	h1
+		| <a href="/">William Ruby</a>
+	h3
+		| Coding for Fun / Form / Function
+	p
+		| <a href="mailto:me@willruby.com">me@willruby.com</a> : 248.667.8765
+	ul.categorys
+		li
+			|<a href="/tag/interactive">Interactive</a>
+		li
+			|<a href="/tag/identity">Identity</a>
+		li
+			|<a href="/tag/print">Print</a>
+		li
+			|<a href="/tag/experience">Experience</a>
+		li
+			|<a href="/tag/type">Type</a>
+	ul
+		li
+			|<a href="/about">About</a>
+		li
+			|<a href="/get">get identity_cms</a>
+	- if (logged)
+		ul
+			li
+				|<a href="/admin">New Post</a>
+			li
+				|<a href="/admin/list">Posts</a>
+			li
+				|<a href="/login">Logout</a>

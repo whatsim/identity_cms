@@ -1,0 +1,23 @@
+!!! 5
+html(lang="en")
+	include includes/head.jade
+	script(src="/scripts/hash.js")
+	body
+		#wrapper
+			canvas#histogram(width="765px",height="200px")
+				img(src="/i/dummy.png")
+			#content
+				.block
+					.rule
+					.two
+						if (msg.length)
+							.title
+								h1
+									#{msg}
+						form(action="/login",method="post",onsubmit="hash()")
+							input(type="text",size="10",maxlength="40",id="name",name="name",placeholder="username");
+							input(type="password",size="10",maxlength="16",id="password",name="password",placeholder="password")
+							input(type="hidden",name="phash",id="phash",value="")
+							input(id="submit",type="submit",value="send")
+					.clear
+			include includes/nav.jade

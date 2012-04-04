@@ -1,0 +1,22 @@
+.block
+	.rule
+	.two
+		.title
+			h1 Posts
+		.table
+			if(posts)
+				- for (var key = 0; key < posts.length; key++)
+					- var post = posts[key]
+						- if (typeof post != "undefined")
+							p.row
+								a(href="http://willruby.com/#{post.tags[0]}/#{post.title.replace(/ /g,'_')}")
+									- if(post.featured == "true")
+										| *
+									#{post.displayTitle}
+									span
+										#{post.displayTags[0]} 
+								a.action(href="http://willruby.com/delete/#{post._id}")
+									| delete
+								a.action(href="http://willruby.com/edit/#{post._id}")
+									| edit
+	.clear
