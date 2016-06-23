@@ -42,10 +42,9 @@ function expandContentStore(store){
 			var post = JSON.parse(JSON.stringify(store.posts[i])) //the old json copy
 
 			post.post = md(post.post)
-			post.displayTitle = post.title[0].toUpperCase() + post.title.substring(1)
 			post.sidebar = md(post.sidebar)
 
-			out.posts[lowerTag][store.posts[i].title] = post
+			out.posts[lowerTag][store.posts[i].title.toLowerCase()] = post
 		}
 		return out
 	} else throw('Invalid Content JSON. Check config.json and Content JSON for errors.')
@@ -55,14 +54,14 @@ function getPage(req, res){
 	var regexp = /\/[\w]+/g
 	var matches = req.url.match(regexp)
 	if(matches[1]) {
-		var page = matches[1].replace("/","").replace(/_/g," ")
+		var page = matches[1].replace("/","").replace(/_/g," ").toLowerCase()
 		var tag = matches[0].replace("/","").toLowerCase()
 	} else {
-		var page = matches[0].replace("/","").replace(/_/g," ")
+		var page = matches[0].replace("/","").replace(/_/g," ").toLowerCase()
 		var tag = "general"
 	}
 	if(content.posts && content.posts[tag] && content.posts[tag][page]){
-		res.render("page", { "headline" : "home", "post" : content.posts[tag][page], 'logged': false /*req.session.logged*/})
+		res.render("page", { "headline" : content.posts[tag][page].title, "post" : content.posts[tag][page], 'logged': false /*req.session.logged*/})
 	} else {
 		res.render("404", { status:404, "pageTitle": headlineText, 'logged': false /*req.session.logged*/})
 	}
@@ -74,7 +73,7 @@ function getHome(req, res){
 		var featuredPosts = []
 		for (var i = featuredPostPaths.length - 1; i >= 0; i--) {
 			var lowerTag = featuredPostPaths[i].tag.toLowerCase()
-			featuredPosts.push(content.posts[lowerTag][featuredPostPaths[i].title])
+			featuredPosts.push(content.posts[lowerTag][featuredPostPaths[i].title.toLowerCase()])
 		}
 		res.render("home", { "headline" : "home", "pageTitle" : headlineText, "posts" : featuredPosts,"pageNum":1,"perPage":perPage,'logged':false /*req.session.logged*/})
 	} else {

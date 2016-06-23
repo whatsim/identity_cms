@@ -2,11 +2,10 @@
 	- for (var key in posts)
 		- var post = posts[key]
 			.three
-				- if (post.media[0])
-					.project
-						a(href="/#{post.tag}/#{post.title.replace(/ /g,'_')}")
-							img#histoImg(src="/i/s/#{post.featuredImage}")
-						- if (post.title.length)
-							a.textLink(href="/#{post.tag}/#{post.title.replace(/ /g,'_')}")
-								| !{post.displayTitle} : !{post.tag}
+				.project
+					a(href="/#{post.tag}/#{post.title.replace(/ /g,'_')}")
+						img#histoImg(src="#{post.featuredImage}")
+					- if (post.title.length)
+						a.textLink(href="/#{post.tag}/#{post.title.replace(/ /g,'_')}")
+							| !{post.title} : !{post.tag}
 	.clear

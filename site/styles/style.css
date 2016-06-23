@@ -71,7 +71,7 @@ body {
 #nav h1 {
 	font-size:12pt;
 	line-height:10pt;
-	margin:1pt 0 10pt;
+	margin:2pt 0 10pt;
 	padding:0;
 	font-weight:400;
 }
@@ -337,7 +337,7 @@ iframe {
 	color:white;
 	background:#ddd;
 }
-.categorys {
+.categories {
 	text-decoration:underline;
 }
 #spacer {
