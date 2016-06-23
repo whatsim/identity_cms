@@ -183,8 +183,8 @@ function update(){
 	context.beginPath();
 	for (var i = 0; i < 255; i++){
 		pointsList[i].update();
-		context.moveTo(.5+(i*3),0);
-		context.lineTo(.5+(i*3),pointsList[i].y+2);
+		context.moveTo(.5+(i*4),0);
+		context.lineTo(.5+(i*4),pointsList[i].y+2);
 	}
 	context.closePath();
 	context.strokeStyle = '#333';

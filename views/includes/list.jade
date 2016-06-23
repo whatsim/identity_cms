@@ -1,12 +1,12 @@
 .block
-	- for (var key = 0; key < posts.length; key++)
+	- for (var key in posts)
 		- var post = posts[key]
 			.three
 				- if (post.media[0])
 					.project
-						a(href="http://willruby.com/#{post.tag}/#{post.title.replace(/ /g,'_')}")
-							img#histoImg(src="http://willruby.com/i/s/#{post.featuredImage}")
+						a(href="/#{post.tag}/#{post.title.replace(/ /g,'_')}")
+							img#histoImg(src="/i/s/#{post.featuredImage}")
 						- if (post.title.length)
-							a.textLink(href="http://willruby.com/#{post.tag}/#{post.title.replace(/ /g,'_')}")
-								#{post.title} : #{post.tag}
+							a.textLink(href="/#{post.tag}/#{post.title.replace(/ /g,'_')}")
+								| !{post.displayTitle} : !{post.tag}
 	.clear

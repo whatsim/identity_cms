@@ -1,55 +1,81 @@
-var express = require('express')
-var app = express()
-var md = require("marked")
-var fs = require('fs')
-var less = require('less')
 
-var config = JSON.parse(fs.readFileSync('config.json'))
+const fs = require('fs')
+const path = require('path');
+
+const express = require('express')
+const app = express()
+const md = require("marked")
+const less = require('less')
+
+const config = JSON.parse(fs.readFileSync('config.json'))
+
 var contentStore = JSON.parse(fs.readFileSync(config.dataPath))
+var content = expandContentStore(contentStore)
 
-var serverRoot = config.fileRoot
-var headlineText = config.headline
-var perPage = config.perPage
-var viewsPath = config.viewsPath
+const serverRoot = path.resolve(config.fileRoot)
+const headlineText = config.headline
+const perPage = config.perPage
+const viewsPath = config.viewsPath
 
 app.set('basepath', serverRoot)
 app.set('views', viewsPath)
-app.set('view engine', 'pug')
-app.set('view options', {
-  layout: false
-})
+app.set('view engine', 'jade')
 
-// app.use(express.cookieParser())
-// app.use(express.session({ secret: Math.random().toString(36).substring(7) }))
-// app.use(express.bodyParser())
+// process contentStore into something easily useable by the routes
+function expandContentStore(store){
+	var out = {
+		posts : {},
+		featured : []
+	}
+	if(store.posts && store.posts.length){
+		for(var i = 0; i < store.posts.length; i++){
+			var lowerTag = store.posts[i].tag.toLowerCase()
+			if(store.posts[i].featured){
+				out.featured.push({
+					tag:lowerTag,
+					title:store.posts[i].title
+				})
+			}
+			
+			if(!out.posts[lowerTag]) out.posts[lowerTag] = {}
+			
+			var post = JSON.parse(JSON.stringify(store.posts[i])) //the old json copy
 
-var time = new Date()
+			post.post = md(post.post)
+			post.displayTitle = post.title[0].toUpperCase() + post.title.substring(1)
+			post.sidebar = md(post.sidebar)
+
+			out.posts[lowerTag][store.posts[i].title] = post
+		}
+		return out
+	} else throw('Invalid Content JSON. Check config.json and Content JSON for errors.')
+}
 
 function getPage(req, res){
 	var regexp = /\/[\w]+/g
 	var matches = req.url.match(regexp)
 	if(matches[1]) {
 		var page = matches[1].replace("/","").replace(/_/g," ")
-		var tag = matches[0].replace("/","")
+		var tag = matches[0].replace("/","").toLowerCase()
 	} else {
 		var page = matches[0].replace("/","").replace(/_/g," ")
-		var tag = "other"
+		var tag = "general"
 	}
-	if(contentStore.posts && contentStore.posts[tag] && contentStore.posts[tag][page]){
-		res.render("page", { "headline" : "home", "posts" : contentStore.posts[tag][page], 'logged': false /*req.session.logged*/})
+	if(content.posts && content.posts[tag] && content.posts[tag][page]){
+		res.render("page", { "headline" : "home", "post" : content.posts[tag][page], 'logged': false /*req.session.logged*/})
 	} else {
 		res.render("404", { status:404, "pageTitle": headlineText, 'logged': false /*req.session.logged*/})
 	}
 }
 
 function getHome(req, res){
-	var featuredPostPaths = contentStore.featured
+	var featuredPostPaths = content.featured
 	if(featuredPostPaths){
 		var featuredPosts = []
 		for (var i = featuredPostPaths.length - 1; i >= 0; i--) {
-			featuredPosts.push(contentStore.posts[featuredPostPaths[i].tag][featuredPostPaths[i].name])
+			var lowerTag = featuredPostPaths[i].tag.toLowerCase()
+			featuredPosts.push(content.posts[lowerTag][featuredPostPaths[i].title])
 		}
-		console.log(featuredPosts)
 		res.render("home", { "headline" : "home", "pageTitle" : headlineText, "posts" : featuredPosts,"pageNum":1,"perPage":perPage,'logged':false /*req.session.logged*/})
 	} else {
 		res.render("404", { status:404, "pageTitle": headlineText, 'logged': false /*req.session.logged*/ })
@@ -57,28 +83,16 @@ function getHome(req, res){
 }
 
 function getTag(req, res){
-	var cat = req.url.substring(5)
-	var items = contentStore.posts[cat]
-	if(items){
-		if(items.length) {
-			res.render("pages", { "headline" : "home",  "posts" : items, 'logged': false /*req.session.logged*/})
-		} else {
-			res.render("404", { status:404,  'logged': false /*req.session.logged*/})
-		}
-	}	
+	var cat = req.url.substring(5).toLowerCase()
+	var items = content.posts[cat]
+	if(items){	
+		res.render("pages", { "headline" : "home",  "posts" : items, 'logged': false /*req.session.logged*/})
+	} else {
+		res.render("404", { status:404,  'logged': false /*req.session.logged*/})
+	}
 }
 
-app.get("*.less", function(req, res) {
-    var path = serverRoot+req.url
-    fs.readFile(path, "utf8", function(err, data) {
-	    if (err) throw err
-		    less.render(data, function(err, css) {
-	            if (err) throw err
-	            res.header("Content-type", "text/css")
-	            res.send(css)
-	    })
-    })
-})
+// render routes
 
 app.get(/(([a-z]*\/)*[a-z,0-9,_]+\.[a-z]+)/, function(req, res, next){
 	res.header('Cache-Control', 'public, max-age=3600000')
@@ -86,7 +100,7 @@ app.get(/(([a-z]*\/)*[a-z,0-9,_]+\.[a-z]+)/, function(req, res, next){
 		if(err){
 			next()
 		} else {
-			res.sendfile(serverRoot+"/"+req.params[0])
+			res.sendFile(serverRoot+"/"+req.params[0])
 		}
 	})
 })
@@ -178,6 +192,7 @@ app.get('*', function(req, res){
 })
 
 
+// post and login
 
 // app.post(/post/,function(req,res){
 // 		if(req.session.phash == "PASSWORD_MD5_HASH"){
