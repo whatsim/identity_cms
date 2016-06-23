@@ -1,0 +1,7 @@
+{
+  "headline": "William Ruby",
+  "fileRoot": "site",
+  "perPage": "5",
+  "dataPath": "content.json",
+  "viewsPath": "views"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "identity_cms",
+  "version": "1.0.0",
+  "description": "portfolio site cms",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/whatsim/identity_cms.git"
+  },
+  "author": "will ruby",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/whatsim/identity_cms/issues"
+  },
+  "homepage": "https://github.com/whatsim/identity_cms#readme",
+  "dependencies": {
+    "express": "^4.14.0",
+    "less": "^2.7.1",
+    "marked": "^0.3.5",
+    "passport": "^0.3.2",
+    "pug": "^0.1.0"
+  }
+}

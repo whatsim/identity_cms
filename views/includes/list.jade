@@ -2,11 +2,11 @@
 	- for (var key = 0; key < posts.length; key++)
 		- var post = posts[key]
 			.three
-				- if (post.images[0])
+				- if (post.media[0])
 					.project
-						a(href="http://willruby.com/#{post.tags[0]}/#{post.title.replace(/ /g,'_')}")
+						a(href="http://willruby.com/#{post.tag}/#{post.title.replace(/ /g,'_')}")
 							img#histoImg(src="http://willruby.com/i/s/#{post.featuredImage}")
 						- if (post.title.length)
-							a.textLink(href="http://willruby.com/#{post.tags[0]}/#{post.title.replace(/ /g,'_')}")
-								#{post.displayTitle} : #{post.displayTags[0]}
+							a.textLink(href="http://willruby.com/#{post.tag}/#{post.title.replace(/ /g,'_')}")
+								#{post.title} : #{post.tag}
 	.clear
