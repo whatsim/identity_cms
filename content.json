@@ -10,6 +10,15 @@
 			"sidebar" : ""
 		},
 		{
+			"title" : "Colada",
+			"tag" : "Interactive",
+			"featured" : true,
+			"featuredImage" : "khz_2.jpg",
+			"media" : ["khz_2.jpg"],
+			"post" : "1000khz was an experimental narrative about the stories of places that aren't here any more. I was interested in the difference between honoring the past versus preserving it. We think letting a building stand empty is a better fate then knocking it in, that while it stands its something of a monument to what was. I've come to think that's something of a cop out.\n\nBy researching my family history here in Detroit, I was saddened to find the buildings that I am connected to were all gone. However, in that research I found out a lot of things I didn't know about my family, and through the whole experience became more aware of my place in it. I thought that remembering the stories of these people was the more important thing.\n\nSo I built radio transmitters, 1000khz AM, and placed them  around Detroit at places that aren't here any more. While their batteries lasted they played stories of the places where they sat.\n\nThe site I built to solicit stories is now offline.",
+			"sidebar" : ""
+		},
+		{
 			"title" : "about",
 			"tag" : "general",
 			"featured" : false,

@@ -23,11 +23,17 @@ var	$body,
 	$one,
 	$hero;
 
-
+var mul = window.devicePixelRatio;
 
 
 $(document).ready(function(){
 
+	
+
+	if(window.location.hostname == "willruby.com"){
+		window.location = "http://www.willruby.com" + window.location.pathname;
+	}
+	
 	//init jquery things
 	$body = $('body');
 	$imgLinks = $body.find('.thumbs');
@@ -39,16 +45,19 @@ $(document).ready(function(){
 	
 	//traditional elements
 	loading = document.getElementById('loading');	
-	canvas = document.getElementById('histogram');
+	canvas = document.querySelector('canvas');
 	histoImg = document.getElementById('histoImg');
 	hero = document.getElementById('hero');
 	
+	canvas.width = mul * canvas.width;
+	canvas.height = mul * canvas.height;
+
 	//prepare drawing context
 	if(isCanvasSupported()){
 		context = canvas.getContext('2d');
 
 		//calls for histogram render update
-		setTimeout(update,30);
+		window.requestAnimationFrame(update,30);
 	}
 	
 	//force the loader to fire (also renders histogram)
@@ -81,7 +90,7 @@ $(document).ready(function(){
 			} else {
 				if($('iframe')) $('iframe').remove();
 				$hero.append('<iframe src="http://player.vimeo.com/video/'+link.substring(17)+'" width="680" height="452" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
-				img.src = "http://clvr.cc/i/blank.png";
+				img.src = "http://www.willruby.com/i/blank.png";
 			}
 		}
 		return false;
@@ -106,7 +115,7 @@ $(document).ready(function(){
 				} else {
 					if($('iframe')) $('iframe').remove();
 					$hero.append('<iframe src="http://player.vimeo.com/video/'+link.substring(17)+'" width="680" height="452" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
-					img.src = "http://clvr.cc/i/blank.png";
+					img.src = "http://www.willruby.com/i/blank.png";
 				}
 			} else {
 				var first = $('.one img')[0];
@@ -124,7 +133,7 @@ $(document).ready(function(){
 				} else {
 					if($('iframe')) $('iframe').remove();
 					$hero.append('<iframe src="http://player.vimeo.com/video/'+link.substring(17)+'" width="680" height="452" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
-					img.src = "http://clvr.cc/i/blank.png";
+					img.src = "http://www.willruby.com/i/blank.png";
 				}
 			}
 		});
@@ -165,11 +174,14 @@ img.onload = function(){
 		$('#imageTransition').fadeIn(75, function(){
 			loading.style.display = "none";
 			histoImg.src = img.src;
-			if(hero.lastChild == img) hero.removeChild(img);
+			setTimeout(cleanupTransition,20);
 		});	
 	}
 }
 
+function cleanupTransition(){
+	if(hero.lastChild == img) hero.removeChild(img);
+}
 
 function createHistogram(){
 	var imgData = generateImageData(img.width,img.height, img);
@@ -183,17 +195,17 @@ function update(){
 	context.beginPath();
 	for (var i = 0; i < 255; i++){
 		pointsList[i].update();
-		context.moveTo(.5+(i*4),0);
-		context.lineTo(.5+(i*4),pointsList[i].y+2);
+		context.moveTo(.5*mul+(i*4)*mul,0);
+		context.lineTo(.5*mul+(i*4)*mul,(pointsList[i].y+2)*mul);
 	}
 	context.closePath();
 	context.strokeStyle = '#333';
-	context.lineWidth = 1;
+	context.lineWidth = 1*mul;
 	context.stroke();
 
 	//prevents running once animation is wrapped up
 	if (runFlag) {
-		setTimeout(update,20);
+		window.requestAnimationFrame(update,20);
 	}
 };
 
