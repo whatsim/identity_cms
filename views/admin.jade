@@ -14,10 +14,10 @@ html(lang="en")
 							.title
 								h1
 									#{message}
-						form(action="/post",method="post")
+						form(action="/edit/#{index}",method="post")
 							input(type="text",size="10",maxlength="60",id="title",name="title",placeholder="title",value="#{post.title}")
 							p.formText tag
-							select(name="tags")
+							select(name="tag")
 								option(value="General", selected=post.tag === 'General')
 									| General
 								option(value="Installation", selected=post.tag === 'Installation')
@@ -42,7 +42,6 @@ html(lang="en")
 							textarea(name="sidebar")
 								| #{post.sidebar}
 							input(id="submit",type="submit",value="submit")
-							input(type="hidden",name="id",value="#{index}")
 					.clear
 				include includes/foot.jade
 

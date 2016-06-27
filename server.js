@@ -134,10 +134,29 @@ app.get('/edit/:index',user.can('administrate'), function(req,res){
 	res.render("admin", { "pageTitle": "admin", "message":"list" , 'user': req.user, 'post':post, 'index':req.params.index});
 })
 
+app.post('/edit/:index',user.can('administrate'), function(req,res){
+	var index = req.params.index
+	if(isNaN(index)) contentStore.posts.push(req.body)
+	else contentStore.posts[index] = req.body
+	content = expandContentStore(contentStore)
+	fs.writeFile(config.dataPath,JSON.stringify(contentStore))
+	res.redirect(`/${req.body.tag}/${req.body.title}`)
+})
+
+app.get('/delete/:index',user.can('administrate'), function(req,res){
+	var index = req.params.index
+	if(!isNaN(index)){
+		contentStore.posts.splice(index,1)
+		content = expandContentStore(contentStore)
+		fs.writeFile(config.dataPath,JSON.stringify(contentStore))
+	}
+	res.redirect('/edit')
+})
+
 // this allows direct reloading of the content store from disk if it was edited manually.
 app.get('/reload',user.can('administrate'), function(req,res){
-	var contentStore = JSON.parse(fs.readFileSync(config.dataPath))
-	var content = expandContentStore(contentStore)
+	contentStore = JSON.parse(fs.readFileSync(config.dataPath))
+	content = expandContentStore(contentStore)
 	res.send('reloaded contentStore.json')
 })
 
