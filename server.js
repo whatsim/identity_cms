@@ -246,7 +246,7 @@ function savePage(req,res){
 	if(isNaN(index)) contentStore.posts.push(req.body)
 	else contentStore.posts[index] = req.body
 	content = expandContentStore(contentStore)
-	fs.writeFile(config.dataPath,JSON.stringify(contentStore))
+	fs.writeFile(config.dataPath,JSON.stringify(contentStore, null, 4))
 	res.redirect(`/${req.body.tag}/${req.body.title}`)
 }
 
