@@ -18,10 +18,15 @@
   },
   "homepage": "https://github.com/whatsim/identity_cms#readme",
   "dependencies": {
+    "body-parser": "^1.15.2",
+    "connect-roles": "^3.1.2",
     "express": "^4.14.0",
+    "express-session": "^1.13.0",
     "jade": "^1.11.0",
-    "less": "^2.7.1",
     "marked": "^0.3.5",
-    "passport": "^0.3.2"
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "serve-static": "^1.11.1",
+    "typeset": "^0.2.2"
   }
 }

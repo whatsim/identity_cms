@@ -9,14 +9,14 @@
 					- var post = posts[key]
 						- if (typeof post != "undefined")
 							p.row
-								a(href="http://willruby.com/#{post.tags[0]}/#{post.title.replace(/ /g,'_')}")
-									- if(post.featured == "true")
+								a(href="/#{post.tag}/#{post.title.replace(/ /g,'_')}")
+									- if(post.featured)
 										| *
-									#{post.displayTitle}
+									| !{post.title} 
 									span
-										#{post.displayTags[0]} 
-								a.action(href="http://willruby.com/delete/#{post._id}")
+										| !{post.tag} 
+								a.action(href="/delete/#{key}")
 									| delete
-								a.action(href="http://willruby.com/edit/#{post._id}")
+								a.action(href="/edit/#{key}")
 									| edit
 	.clear

@@ -1,27 +1,169 @@
+// builtins
 
 const fs = require('fs')
 const path = require('path');
 
+// third party modules
+// allowing web administration is half of these :(
+
 const express = require('express')
+const session = require('express-session')
+const bodyParser = require('body-parser')
+const passport = require('passport')
+const LocalStrategy = require('passport-local')
+const ConnectRoles = require('connect-roles')
+const serveStatic = require('serve-static')
 const app = express()
 const md = require("marked")
-const less = require('less')
+const typeset = require("typeset")
+
+// yes, this is lazy to be sync.
+// it only happens on start and if it fails the server shouldn't spin up anyway.
 
 const config = JSON.parse(fs.readFileSync('config.json'))
-
 var contentStore = JSON.parse(fs.readFileSync(config.dataPath))
 var content = expandContentStore(contentStore)
+
+const postTemplate = {
+	title : "",
+	tag : "",
+	featured : false,
+	featuredImage : "",
+	media : "",
+	post : "",
+	sidebar : ""
+}
+
+// set globals from config
 
 const serverRoot = path.resolve(config.fileRoot)
 const headlineText = config.headline
 const perPage = config.perPage
 const viewsPath = config.viewsPath
 
+// set up user middleware
+
+const user = new ConnectRoles({
+	failureHandler: function (req, res, action) {
+		res.status(403);
+		res.render('error', { status:403, "pageTitle": "403", 'user': req.user});
+	}
+});
+
+user.use(function (req, action) {
+	if (!req.isAuthenticated()) return action === 'public';
+})
+
+user.use('administrate', function (req) {
+	if (req.user.role === 1) {
+		return true;
+	}
+})
+
+
+// serve assets dir
+app.use('/', serveStatic(serverRoot));
 app.set('basepath', serverRoot)
+
+// general express config
 app.set('views', viewsPath)
 app.set('view engine', 'jade')
 
-// process contentStore into something easily useable by the routes
+// express middleware for admin
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({extended:true}));
+
+app.use(session({
+	secret: 'lololol',
+	saveUninitialized: true,
+	resave: true
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(user.middleware());
+
+
+
+// configure passport for auth
+
+passport.use(new LocalStrategy({
+		usernameField: 'username',
+		passwordField: 'phash'
+	},function(username, password, done) {
+  		if(username === config.username && password === config.passwordMD5){
+  			return done(null,{
+  				role:1,
+  				username:username
+  			})
+  		} else return done(null,false, { message: 'There was a problem with your Username or Password.'})
+	}
+));
+
+passport.serializeUser(function(user, done) {
+	done(null, user);
+});
+
+passport.deserializeUser(function(user, done) {
+	done(null, user);
+});
+
+
+// admin routes 
+
+app.post('/login',passport.authenticate('local', { successRedirect: '/edit',failureRedirect: '/login' }));
+
+app.get('/logout', function(req, res){
+	req.logout();
+	res.redirect('/login');
+});
+
+app.get('/login', function(req,res){
+	res.render("login", { "pageTitle": "login", "message":"", "headline":"login", 'user': req.user });
+})
+
+app.get('/edit', user.can('administrate'), function(req,res){
+	res.render("adminList", { "pageTitle": "admin", "message":"list" , 'user': req.user, 'posts':contentStore.posts});
+})
+
+app.get('/edit/:index',user.can('administrate'), function(req,res){
+	if(req.params.index !== 'new'){
+		var post = contentStore.posts[req.params.index]
+	} else {
+		var post = postTemplate
+	}
+	res.render("admin", { "pageTitle": "admin", "message":"list" , 'user': req.user, 'post':post, 'index':req.params.index});
+})
+
+// this allows direct reloading of the content store from disk if it was edited manually.
+app.get('/reload',user.can('administrate'), function(req,res){
+	var contentStore = JSON.parse(fs.readFileSync(config.dataPath))
+	var content = expandContentStore(contentStore)
+	res.send('reloaded contentStore.json')
+})
+
+
+// set public routes
+
+app.get('/tag/:tag',getTag)
+app.get('/:tag/:pageName',getPage)
+app.get('/:pageName',getPage)
+app.get('/',getHome)
+
+app.get('*', function(req, res){
+	res.render("error", { status:404, "pageTitle": "404", 'user': req.user })
+})
+
+
+// all the text transforms to be applied to body copy
+function processBodyCopy(copy){
+	return typeset(md(copy))
+}
+
+// processes the contentStore json into something easily useable by the routes
+// this creates redundancies in the data that'd be tiresome to maintain in the
+// contentStore file, and is relatively cheap since we only do it on start
+// or if content changes.
+
 function expandContentStore(store){
 	var out = {
 		posts : {},
@@ -41,8 +183,8 @@ function expandContentStore(store){
 			
 			var post = JSON.parse(JSON.stringify(store.posts[i])) //the old json copy
 
-			post.post = md(post.post)
-			post.sidebar = md(post.sidebar)
+			post.post = processBodyCopy(post.post)
+			post.sidebar = processBodyCopy(post.sidebar)
 
 			out.posts[lowerTag][store.posts[i].title.toLowerCase()] = post
 		}
@@ -50,193 +192,43 @@ function expandContentStore(store){
 	} else throw('Invalid Content JSON. Check config.json and Content JSON for errors.')
 }
 
-function getPage(req, res){
-	var regexp = /\/[\w]+/g
-	var matches = req.url.match(regexp)
-	if(matches[1]) {
-		var page = matches[1].replace("/","").replace(/_/g," ").toLowerCase()
-		var tag = matches[0].replace("/","").toLowerCase()
-	} else {
-		var page = matches[0].replace("/","").replace(/_/g," ").toLowerCase()
-		var tag = "general"
-	}
+
+// public route handlers
+
+function getPage(req, res, next){
+	var page = req.params.pageName.toLowerCase()
+	var tag = req.params.tag ? req.params.tag.toLowerCase() : "general"
 	if(content.posts && content.posts[tag] && content.posts[tag][page]){
-		res.render("page", { "headline" : content.posts[tag][page].title, "post" : content.posts[tag][page], 'logged': false /*req.session.logged*/})
+		res.render("page", { "headline" : content.posts[tag][page].title, "post" : content.posts[tag][page], 'user': req.user})
 	} else {
-		res.render("404", { status:404, "pageTitle": headlineText, 'logged': false /*req.session.logged*/})
+		next()
 	}
 }
 
-function getHome(req, res){
+function getHome(req, res, next){
 	var featuredPostPaths = content.featured
 	if(featuredPostPaths){
 		var featuredPosts = []
 		for (var i = featuredPostPaths.length - 1; i >= 0; i--) {
 			var lowerTag = featuredPostPaths[i].tag.toLowerCase()
-			featuredPosts.push(content.posts[lowerTag][featuredPostPaths[i].title.toLowerCase()])
+			var lowerTitle = featuredPostPaths[i].title.toLowerCase()
+			featuredPosts.push(content.posts[lowerTag][lowerTitle])
 		}
-		res.render("home", { "headline" : "home", "pageTitle" : headlineText, "posts" : featuredPosts,"pageNum":1,"perPage":perPage,'logged':false /*req.session.logged*/})
+		res.render("home", { "headline" : config.headline, "pageTitle" : headlineText, "posts" : featuredPosts,"pageNum":1,"perPage":perPage,'user': req.user})
 	} else {
-		res.render("404", { status:404, "pageTitle": headlineText, 'logged': false /*req.session.logged*/ })
+		next()
 	}
 }
 
-function getTag(req, res){
-	var cat = req.url.substring(5).toLowerCase()
-	var items = content.posts[cat]
+function getTag(req, res, next){
+	var tag = req.params.tag.toLowerCase()
+	var items = content.posts[tag]
 	if(items){	
-		res.render("pages", { "headline" : "home",  "posts" : items, 'logged': false /*req.session.logged*/})
+		res.render("pages", { "headline" : tag,  "posts" : items, 'user': req.user})
 	} else {
-		res.render("404", { status:404,  'logged': false /*req.session.logged*/})
+		next()
 	}
 }
 
-// render routes
-
-app.get(/(([a-z]*\/)*[a-z,0-9,_]+\.[a-z]+)/, function(req, res, next){
-	res.header('Cache-Control', 'public, max-age=3600000')
-	fs.stat(serverRoot+"/"+req.params[0],function(err,stats){
-		if(err){
-			next()
-		} else {
-			res.sendFile(serverRoot+"/"+req.params[0])
-		}
-	})
-})
-
-// app.get(/delete\//,function(req, res){
-// 		if(req.session.phash == "PASSWORD_MD5_HASH"){
-// 			var page = req.url.substring(8).replace('_',' ')
-// 			db.open(function(err, db) {
-// 				db.collection('posts', function(err, collection) {  
-// 					collection.remove({'_id':new mongo.ObjectID(page)},function(){
-// 						collection.find(function(err, cursor) {	
-// 							cursor.sort( { time : -1 } ).skip(0)
-// 							cursor.toArray(function(err, items) {
-// 								res.render("adminList", { "pageTitle": "admin", "msg":"list" , 'logged': req.session.logged, 'posts':items})
-// 								db.close()
-// 							})
-// 						}); 
-// 					})
-// 				})
-// 			})
-// 		} else {
-// 			res.render("login", { "pageTitle": "login", "msg":"", "headline":"login", 'logged': req.session.logged })
-// 		}
-	
-// })
-
-// app.get(/admin/,function(req, res){
-// 		if(req.session.phash == "PASSWORD_MD5_HASH"){
-// 			if(req.url.substring(6) == "/list"){
-// 				db.open(function(err, db) {
-// 					db.collection('posts', function(err, collection) {  
-// 						collection.find(function(err, cursor) {	
-// 							cursor.sort( { time : -1 } ).skip(0)
-// 							cursor.toArray(function(err, items) {
-// 								res.render("adminList", { "pageTitle": "admin", "msg":"list" , 'logged': req.session.logged, 'posts':items})
-// 								db.close()
-// 							})
-// 						});   
-// 					})
-// 				});   
-					
-// 			} else {
-// 				res.render("admin", { "pageTitle": "admin", "msg":"" , 'logged': req.session.logged , "posts":[]})
-// 			}
-// 		} else {
-// 			res.render("login", { "pageTitle": "login", "msg":"", "headline":"login", 'logged': req.session.logged })
-// 		}
-// 	})
-
-// app.get(/login/,function(req,res){
-	
-// 		if(req.session.phash == "PASSWORD_MD5_HASH"){
-// 			req.session.destroy()
-// 			res.render("login", { "pageTitle": "login", "msg":"logged out", "headline":"login", 'logged': []})
-// 		} else {
-// 			res.render("login", { "pageTitle": "login", "msg":"", "headline":"login" , 'logged': req.session.logged})
-// 		}
-	
-// })
-
-// app.get(/edit/,function(req,res){
-	
-// 		if(req.session.phash == "PASSWORD_MD5_HASH"){
-// 			var page = req.url.substring(6).replace(/_/g,' ')
-// 			db.open(function(err, db) {
-// 				db.collection('posts', function(err, collection) {  
-// 					collection.find({'_id':new mongo.ObjectID(page)},function(err, cursor) {	
-// 						cursor.toArray(function(err, items) {
-// 							res.render("admin", { "pageTitle": "admin", "msg":"list" , 'logged': req.session.logged, 'posts':items})
-// 							db.close()
-// 						})
-// 					});   
-// 				})
-// 			})
-// 		} else {
-// 			res.render("login", { "pageTitle": "login", "msg":"", "headline":"login" , 'logged': req.session.logged})
-// 		}
-	
-// })
-
-app.get('*', function(req, res){
-	if(req.url.substring(0,5) == "/tag/"){
-		getTag(req, res)
-	} else if(req.url == "/"){
-		getHome(req, res)
-	} else {
-		getPage(req, res)
-	}
-})
-
-
-// post and login
-
-// app.post(/post/,function(req,res){
-// 		if(req.session.phash == "PASSWORD_MD5_HASH"){
-// 			time = new Date()
-// 			db.open(function(err, db) {
-// 				db.collection('posts', function(err, collection) {
-// 						var images = req.body.images.split("\n")
-// 						var length = 0
-// 						while(images[length]!="\r" && images[length]!="" && length != images.length){
-// 							length ++
-// 						}
-// 						images.length = length
-// 						var post = md(req.body.post, true)
-// 						var sidebar = md(req.body.sidebar, true)
-// 						if(req.body.id != ""){
-// 							collection.update({'_id':new mongo.ObjectID(req.body.id)},{'displayTitle':req.body.title,'title':req.body.title.toLowerCase(),'post':post,'time':time.getTime(),'images': images, 'tags': req.body.tags.toLowerCase().split(", "),'displayTags': req.body.tags.split(", "), 'sidebar': sidebar,'featured':req.body.featured,'preProcessPost':req.body.post,'preProcessSidebar':req.body.sidebar,'preProcessImages':req.body.images, 'featuredImage':req.body.featuredImage, 'process': req.body.process},{upsert:true}, function(){
-// 								res.render("admin", { "pageTitle": "admin", "msg":"success", 'logged': req.session.logged , "posts": []})
-// 							})
-// 						} else {
-// 							collection.insert({'displayTitle':req.body.title,'title':req.body.title.toLowerCase(),'post':post,'time':time.getTime(),'images': images, 'tags': req.body.tags.toLowerCase().split(", "),'displayTags': req.body.tags.split(", "), 'sidebar': sidebar,'featured':req.body.featured,'preProcessPost':req.body.post,'preProcessSidebar':req.body.sidebar,'preProcessImages':req.body.images, 'featuredImage':req.body.featuredImage, 'process': req.body.process }, function(){
-// 								res.render("admin", { "pageTitle": "admin", "msg":"success", 'logged': req.session.logged , "posts": []})
-// 							})
-// 						}
-					
-// 				})
-// 			})
-			
-// 		} else {
-// 			req.session.destroy()
-// 			res.render("login", { "pageTitle": "login", "msg":"nuh-uh", 'logged': [] })
-// 		}
-	
-	
-// })
-
-// app.post(/login/, function(req, res){
-// 		if(req.body.name == "whatsim" && req.body.phash == "MD5_PASSHASH"){
-// 			req.session.logged = true
-// 			req.session.phash = "PASSWORD_MD5_HASH"
-// 			res.render("admin", { "pageTitle": "admin", "msg":"logged", 'logged': req.session.logged, "posts": [] })
-// 		} else {
-// 			req.session.destroy()
-// 			res.render("login", { "pageTitle": "login", "msg":"bad login", 'logged': [] })
-// 		}
-	
-// })
-
+// spin
 app.listen(8080)

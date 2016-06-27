@@ -4,7 +4,7 @@
 			iframe(src="http://player.vimeo.com/video/#{post.media[0].id}",width="680",height="452",frameborder="0",webkitAllowFullScreen,mozallowfullscreen,allowFullScreen)
 			img#histoImg.heroImg(src="/i/blank.png")
 		- } else {
-			img#histoImg.heroImg(src="#{post.media[0]}")
+			img#histoImg.heroImg(src="#{post.media[0]['1x']}")
 		- }
 		- if (post.media.length > 1)
 		#loading
@@ -18,7 +18,7 @@
 			.title
 				h1
 					| #{post.title}
-				- if (post.tag.length && post.tag != "general")	
+				- if (post.tag.length && post.tag != "General")	
 					a(href='/tag/#{post.tag}').tags !{post.tag}
 		- if (post.post.length)
 			.copy

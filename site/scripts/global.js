@@ -184,7 +184,7 @@ function cleanupTransition(){
 }
 
 function createHistogram(){
-	var imgData = generateImageData(img.width,img.height, img);
+	var imgData = generateImageData(img.width/3,img.height/3, img);
 	var histogram = generateHistogram(imgData);
 	update();
 }
@@ -237,8 +237,11 @@ function generateHistogram(imageData) {
 	for (var i = 0; i < 255; i++){
 		if(max < brightness[i]) max = brightness[i];
 	}
+	
 	for (var i = 0; i < 255; i++){
-		pointsList[i].targetY = Math.round((brightness[i]/max)*125);
+		console.log(brightness[i]/max*canvas.clientHeight,max)
+
+		pointsList[i].targetY = brightness[i]/max*canvas.clientHeight;
 	}	
 }
 

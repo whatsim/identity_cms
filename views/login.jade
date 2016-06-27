@@ -5,18 +5,18 @@ html(lang="en")
 	script(src="/scripts/hash.js")
 	body
 		#wrapper
-			canvas#histogram(width="1000px",height="200px")
+			canvas#histogram(width="1000px",height="125px")
 				img(src="/i/dummy.png")
 			#content
 				.block
 					.rule
 					.two
-						if (msg.length)
+						if (message.length)
 							.title
 								h1
-									#{msg}
+									#{message}
 						form(action="/login",method="post",onsubmit="hash()")
-							input(type="text",size="10",maxlength="40",id="name",name="name",placeholder="username");
+							input(type="text",size="10",maxlength="40",id="name",name="username",placeholder="username")
 							input(type="password",size="10",maxlength="16",id="password",name="password",placeholder="password")
 							input(type="hidden",name="phash",id="phash",value="")
 							input(id="submit",type="submit",value="send")

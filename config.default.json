@@ -3,5 +3,7 @@
   "fileRoot": "site",
   "perPage": "5",
   "dataPath": "content.json",
-  "viewsPath": "views"
+  "viewsPath": "views",
+  "username" : "username",
+  "passwordMD5" : "MD5STRING"
 }

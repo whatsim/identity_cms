@@ -4,131 +4,45 @@ html(lang="en")
 
 	body
 		#wrapper
-			canvas#histogram(width="1000px",height="200px")
+			canvas#histogram(width="1000px",height="125px")
 				img(src="/i/dummy.png")
 			#content
 				.block
 					.rule
 					.two
-						if (msg.length)
+						if (message.length)
 							.title
 								h1
-									#{msg}
-						- if (!posts.length){
-							form(action="/post",method="post")
-								input(type="text",size="10",maxlength="60",id="title",name="title",placeholder="title");
-								p.formText tag
-								select(name="tags")
-									option(value="Other")
-										| Other
-									option(value="Experience")
-										| Experience
-									option(value="Interactive")
-										| Interactive
-									option(value="Identity")
-										| Identity
-									option(value="Print")
-										| Print
-									option(value="Type")
-										| Type
-									option(value="Process")
-										| Process
-								p.formText
-									| featured - 
-									input(type="checkbox",name="featured",value="true")
-								p.process
-									| process - 
-									input(type="checkbox",name="process",value="true")
-								input(type="text",size="10",maxlength="60",id="featuredImage",name="featuredImage",placeholder="featured image");
-								p.formText media
-								textarea(name="images")
-								p.formText post
-								textarea(name="post",id="post")
-								p.formText sidebar
-								textarea(name="sidebar")
-								input(id="submit",type="submit",value="submit")
-								input(type="hidden",name="id",value="")
-						- } else {
-							form(action="/post",method="post")
-								input(type="text",size="10",maxlength="60",id="title",name="title",placeholder="title",value="#{posts[0].displayTitle}");
-								p.formText tag
-								select(name="tags")
-									- if(posts[0].tags[0] == "other"){
-										option(value="Other", selected="selected")
-											| Other
-									- } else {
-										option(value="Other")
-											| Other
-									- }
-									- if(posts[0].tags[0] == "experience"){
-										option(value="Experience", selected="selected")
-											| Experience
-									- } else {
-										option(value="Experience")
-											| Experience
-									- }
-									- if(posts[0].tags[0] == "interactive"){
-										option(value="Interactive", selected="selected")
-											| Interactive
-									- } else {
-										option(value="Interactive")
-											| Interactive
-									- }
-									- if(posts[0].tags[0] == "identity"){
-										option(value="Identity", selected="selected")
-											| type
-									- } else {
-										option(value="Identity")
-											| Type
-									- }
-									- if(posts[0].tags[0] == "print"){
-										option(value="Print", selected="selected")
-											| Print
-									- } else {
-										option(value="Print")
-											| Print
-									- }
-									- if(posts[0].tags[0] == "type"){
-										option(value="Type", selected="selected")
-											| Type
-									- } else {
-										option(value="Type")
-											| Type
-									- }
-									- if(posts[0].tags[0] == "process"){
-										option(value="Process", selected="selected")
-											| Process
-									- } else {
-										option(value="Process")
-											| Process
-									- }
-								p.formText
-									| featured - 
-									- if(posts[0].featured == "true"){
-										input(type="checkbox",name="featured",value="true",checked="checked")
-									- } else {
-										input(type="checkbox",name="featured",value="true")
-									- }
-								p.process
-									| process - 
-									- if(posts[0].process == "true"){
-										input(type="checkbox",name="process",value="true",checked="checked")
-									- } else {
-										input(type="checkbox",name="process",value="true")
-									- }
-								input(type="text",size="10",maxlength="60",id="featuredImage",name="featuredImage",placeholder="featured image",value="#{posts[0].featuredImage}");
-								p.formText media
-								textarea(name="images")
-									#{posts[0].preProcessImages}
-								p.formText post
-								textarea(name="post",id="post")
-									#{posts[0].preProcessPost}
-								p.formText sidebar
-								textarea(name="sidebar")
-									#{posts[0].preProcessSidebar}
-								input(id="submit",type="submit",value="submit")
-								input(type="hidden",name="id",value="#{posts[0]._id}")
-						- }
+									#{message}
+						form(action="/post",method="post")
+							input(type="text",size="10",maxlength="60",id="title",name="title",placeholder="title",value="#{post.title}")
+							p.formText tag
+							select(name="tags")
+								option(value="General", selected=post.tag === 'General')
+									| General
+								option(value="Installation", selected=post.tag === 'Installation')
+									| Installation
+								option(value="Interactive", selected=post.tag == 'Interactive')
+									| Interactive
+								option(value="Type", selected=post.tag == 'Type')
+									| Type
+								option(value="Experiments", selected=post.tag == 'Experiments')
+									| Experiments
+							p.formText
+								| featured - 
+								input(type="checkbox",name="featured",value="true",checked=post.featured)
+							input(type="text",size="10",maxlength="60",id="featuredImage",name="featuredImage",placeholder="featured image",value="#{post.featuredImage}")
+							p.formText media: image [1x] [2x] / video [vimeo id]
+							textarea(name="media")
+								| #{post.media}
+							p.formText post
+							textarea(name="post",id="post")
+								| #{post.post}
+							p.formText sidebar
+							textarea(name="sidebar")
+								| #{post.sidebar}
+							input(id="submit",type="submit",value="submit")
+							input(type="hidden",name="id",value="#{index}")
 					.clear
 				include includes/foot.jade
 
