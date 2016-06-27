@@ -1,3 +1,6 @@
+mixin category(tag)
+	option(value=tag, selected=post.tag === tag)= tag
+
 doctype html
 html(lang="en")
 	include includes/head.jade
@@ -18,16 +21,8 @@ html(lang="en")
 							input(type="text",size="10",maxlength="60",id="title",name="title",placeholder="title",value="#{post.title}")
 							p.formText tag
 							select(name="tag")
-								option(value="General", selected=post.tag === 'General')
-									| General
-								option(value="Installation", selected=post.tag === 'Installation')
-									| Installation
-								option(value="Interactive", selected=post.tag == 'Interactive')
-									| Interactive
-								option(value="Type", selected=post.tag == 'Type')
-									| Type
-								option(value="Experiments", selected=post.tag == 'Experiments')
-									| Experiments
+								- for (var i = 0; i < categories.length; i++)
+									+category(categories[i])
 							p.formText
 								| featured - 
 								input(type="checkbox",name="featured",value="true",checked=post.featured)

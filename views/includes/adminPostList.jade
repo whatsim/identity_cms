@@ -12,7 +12,7 @@
 								a(href="/#{post.tag}/#{post.title.replace(/ /g,'_')}")
 									- if(post.featured)
 										| *
-									| !{post.title} 
+									| !{post.title} - 
 									span
 										| !{post.tag} 
 								a.action(href="/delete/#{key}")

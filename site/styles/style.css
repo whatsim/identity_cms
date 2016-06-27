@@ -187,7 +187,7 @@ a:hover {
 	-webkit-column-fill: balance;
 	font-weight:400;
 	font-size-adjust:.45;
-	margin-bottom:3pt;
+	margin-bottom: 10px;
 }
 .clear {
 	clear:both;

@@ -5,5 +5,7 @@
   "dataPath": "content.json",
   "viewsPath": "views",
   "username" : "username",
-  "passwordMD5" : "MD5STRING"
+  "passwordMD5" : "MD5STRING",
+  "guestUsername" : "guestusername",
+  "guestPasswordMD5" : "MD5STRING"
 }

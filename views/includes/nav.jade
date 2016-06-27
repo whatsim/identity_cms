@@ -19,11 +19,11 @@
 			|<a href="/about">About</a>
 		li
 			|<a href="/colophon">Colophon</a>
-	- if (logged)
+	- if (user)
 		ul
 			li
-				|<a href="/admin">New Post</a>
+				|<a href="/edit/new">New Post</a>
 			li
-				|<a href="/admin/list">Posts</a>
+				|<a href="/edit">Posts</a>
 			li
-				|<a href="/login">Logout</a>
+				|<a href="/logout">Logout</a>

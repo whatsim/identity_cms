@@ -83,7 +83,6 @@ app.use(passport.session());
 app.use(user.middleware());
 
 
-
 // configure passport for auth
 
 passport.use(new LocalStrategy({
@@ -110,8 +109,6 @@ passport.deserializeUser(function(user, done) {
 
 // admin routes 
 
-app.post('/login',passport.authenticate('local', { successRedirect: '/edit',failureRedirect: '/login' }));
-
 app.get('/logout', function(req, res){
 	req.logout();
 	res.redirect('/login');
@@ -121,45 +118,16 @@ app.get('/login', function(req,res){
 	res.render("login", { "pageTitle": "login", "message":"", "headline":"login", 'user': req.user });
 })
 
+app.post('/login',passport.authenticate('local', { successRedirect: '/edit',failureRedirect: '/login' }));
+
 app.get('/edit', user.can('administrate'), function(req,res){
 	res.render("adminList", { "pageTitle": "admin", "message":"list" , 'user': req.user, 'posts':contentStore.posts});
 })
+app.get('/edit/:index',user.can('administrate'), getEditPage)
+app.post('/edit/:index',user.can('administrate'), savePage)
+app.get('/delete/:index',user.can('administrate'), deletePage)
 
-app.get('/edit/:index',user.can('administrate'), function(req,res){
-	if(req.params.index !== 'new'){
-		var post = contentStore.posts[req.params.index]
-	} else {
-		var post = postTemplate
-	}
-	res.render("admin", { "pageTitle": "admin", "message":"list" , 'user': req.user, 'post':post, 'index':req.params.index});
-})
-
-app.post('/edit/:index',user.can('administrate'), function(req,res){
-	var index = req.params.index
-	if(isNaN(index)) contentStore.posts.push(req.body)
-	else contentStore.posts[index] = req.body
-	content = expandContentStore(contentStore)
-	fs.writeFile(config.dataPath,JSON.stringify(contentStore))
-	res.redirect(`/${req.body.tag}/${req.body.title}`)
-})
-
-app.get('/delete/:index',user.can('administrate'), function(req,res){
-	var index = req.params.index
-	if(!isNaN(index)){
-		contentStore.posts.splice(index,1)
-		content = expandContentStore(contentStore)
-		fs.writeFile(config.dataPath,JSON.stringify(contentStore))
-	}
-	res.redirect('/edit')
-})
-
-// this allows direct reloading of the content store from disk if it was edited manually.
-app.get('/reload',user.can('administrate'), function(req,res){
-	contentStore = JSON.parse(fs.readFileSync(config.dataPath))
-	content = expandContentStore(contentStore)
-	res.send('reloaded contentStore.json')
-})
-
+app.get('/reload',user.can('administrate'), reloadContentStore)
 
 // set public routes
 
@@ -204,13 +172,25 @@ function expandContentStore(store){
 
 			post.post = processBodyCopy(post.post)
 			post.sidebar = processBodyCopy(post.sidebar)
-
+			var media = []
+			var mediaItems = post.media.split('\n')
+			mediaItems.forEach(function(i){
+				var values = i.split(' ')
+				var m = { type : values[0]}
+				if(values[0] = 'image'){
+					m['1x'] = values[1] ? values[1] : ''
+					m['2x'] = values[2] ? values[2] : ''
+				} else {
+					m.id = values[1]
+				}
+				if(m.type) media.push(m)
+			})
+			post.media = media
 			out.posts[lowerTag][store.posts[i].title.toLowerCase()] = post
 		}
 		return out
 	} else throw('Invalid Content JSON. Check config.json and Content JSON for errors.')
 }
-
 
 // public route handlers
 
@@ -247,6 +227,46 @@ function getTag(req, res, next){
 	} else {
 		next()
 	}
+}
+
+
+// admin route handlers
+
+function getEditPage(req,res){
+	if(req.params.index !== 'new'){
+		var post = contentStore.posts[req.params.index]
+	} else {
+		var post = postTemplate
+	}
+	res.render("admin", { "pageTitle": "admin", "message":"list" , 'user': req.user, 'post':post, 'index':req.params.index, 'categories':contentStore.categories});
+}
+
+function savePage(req,res){
+	var index = req.params.index
+	if(isNaN(index)) contentStore.posts.push(req.body)
+	else contentStore.posts[index] = req.body
+	content = expandContentStore(contentStore)
+	fs.writeFile(config.dataPath,JSON.stringify(contentStore))
+	res.redirect(`/${req.body.tag}/${req.body.title}`)
+}
+
+function deletePage(req,res){
+	var index = req.params.index
+	if(!isNaN(index)){
+		contentStore.posts.splice(index,1)
+		content = expandContentStore(contentStore)
+
+		// should handle if it can't save.
+		fs.writeFile(config.dataPath,JSON.stringify(contentStore))
+	}
+	res.redirect('/edit')
+}
+
+function reloadContentStore(req,res){
+	// this allows direct reloading of the content store from disk if it was edited manually.
+	contentStore = JSON.parse(fs.readFileSync(config.dataPath))
+	content = expandContentStore(contentStore)
+	res.send('reloaded contentStore.json')
 }
 
 // spin
