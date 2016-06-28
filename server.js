@@ -173,11 +173,11 @@ function expandContentStore(store){
 			post.post = processBodyCopy(post.post)
 			post.sidebar = processBodyCopy(post.sidebar)
 			var media = []
-			var mediaItems = post.media.split('\n')
+			var mediaItems = post.media.split('\r\n')
 			mediaItems.forEach(function(i){
 				var values = i.split(' ')
 				var m = { type : values[0]}
-				if(values[0] = 'image'){
+				if(values[0] === 'image'){
 					m['1x'] = values[1] ? values[1] : ''
 					m['2x'] = values[2] ? values[2] : ''
 				} else {
@@ -213,7 +213,7 @@ function getHome(req, res, next){
 			var lowerTitle = featuredPostPaths[i].title.toLowerCase()
 			featuredPosts.push(content.posts[lowerTag][lowerTitle])
 		}
-		res.render("home", { "headline" : config.headline, "pageTitle" : headlineText, "posts" : featuredPosts,"pageNum":1,"perPage":perPage,'user': req.user})
+		res.render("pageList", { "headline" : config.headline, "posts" : featuredPosts,'user': req.user})
 	} else {
 		next()
 	}
@@ -223,7 +223,7 @@ function getTag(req, res, next){
 	var tag = req.params.tag.toLowerCase()
 	var items = content.posts[tag]
 	if(items){	
-		res.render("pages", { "headline" : tag,  "posts" : items, 'user': req.user})
+		res.render("pageList", { "headline" : tag,  "posts" : items, 'user': req.user})
 	} else {
 		next()
 	}

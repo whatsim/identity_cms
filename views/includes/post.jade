@@ -30,7 +30,7 @@
 				- if (post.process == "true")	
 					a(href="/process/#{post.title.replace(/ /g,'_')}").tags.processLink Process Work
 				- post.media.forEach(function(item){
-					- if(item.indexOf("video") < 0){
+					- if(item.type == "video"){
 						-if(i == 0)
 							a.thumbs(href="/i/#{item}")
 								img.active(src="#{item}")
@@ -38,13 +38,12 @@
 							a.thumbs(href="/i/#{item}")
 								img(src="#{item}")
 					- } else {
-						- var videoPlayer = item.split(" ");
 						-if(i == 0)
-							a.thumbs(href="http://vimeo.com/#{videoPlayer[1]}")
-								img.active(src="#{videoPlayer[2]}")
+							a.thumbs(href="http://vimeo.com/#{item.id}")
+								img.active(src="#{item.id}")
 						- else
-							a.thumbs(href="http://vimeo.com/#{videoPlayer[1]}")
-								img(src="#{videoPlayer[2]}")
+							a.thumbs(href="http://vimeo.com/#{item.id}")
+								img(src="#{item.id}")
 					- }
 					-i++
 				- })
