@@ -1,0 +1,21 @@
+{
+    "categories": [
+        "General",
+        "Installation",
+        "Interactive",
+        "Type",
+        "Experiments",
+        "Secret"
+    ],
+    "posts": [
+        {
+            "title": "example",
+            "tag": "Installation",
+            "featured": true,
+            "featuredImage": "/images/tunnelcrop.jpg",
+            "media": "image /images/sfmoma.jpg /images/sfmoma.jpg",
+            "post": "example content",
+            "sidebar": "+ example"
+        }
+    ]
+}
