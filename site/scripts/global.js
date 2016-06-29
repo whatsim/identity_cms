@@ -28,8 +28,6 @@ var mul = window.devicePixelRatio;
 
 $(document).ready(function(){
 
-	
-
 	if(window.location.hostname == "willruby.com"){
 		window.location = "http://www.willruby.com" + window.location.pathname;
 	}

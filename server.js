@@ -46,7 +46,9 @@ const viewsPath = config.viewsPath
 const user = new ConnectRoles({
 	failureHandler: function (req, res, action) {
 		res.status(403);
-		res.render('error', { status:403, "pageTitle": "403", 'user': req.user});
+		if(req.route.path === '/secret/:pageName' || req.route.path === '/tag/secret'){
+			res.render("login", { "pageTitle": "login", "message":"", "headline":"login", 'user': req.user, 'redirectURL' : req.url });
+		} else res.render('error', { status:403, "pageTitle": "403", 'user': req.user});
 	}
 });
 
@@ -60,8 +62,8 @@ user.use('administrate', function (req) {
 	}
 })
 
-user.use('keepasecret', function (req) {
-	if (req.user.role === "admin" || req.user.role === "secretkeeper") {
+user.use('viewprotected', function (req) {
+	if (req.user.role === "admin" || req.user.role === "guest") {
 		return true;
 	}
 })
@@ -102,7 +104,7 @@ passport.use(new LocalStrategy({
   			})
   		} else if(username === config.guestUsername && password === config.guestPasswordMD5){
   			return done(null,{
-  				role:"secretkeeper",
+  				role:"guest",
   				username:username
   			})
   		} else return done(null,false, { message: 'There was a problem with your Username or Password.'})
@@ -129,7 +131,14 @@ app.get('/login', function(req,res){
 	res.render("login", { "pageTitle": "login", "message":"", "headline":"login", 'user': req.user });
 })
 
-app.post('/login',passport.authenticate('local', { successRedirect: '/edit',failureRedirect: '/login' }));
+app.post('/login',passport.authenticate('local'),function(req,res){
+	if(req.body.url) res.redirect(req.body.url)
+	if(req.isAuthenticated()){
+		if(req.user.role === 'admin') res.redirect('/edit')
+		else if(req.user.role === 'guest') res.redirect('/tag/secret')
+		else res.redirect('/')
+	} else res.redirect('/login')
+});
 
 app.get('/edit', user.can('administrate'), function(req,res){
 	res.render("adminList", { "pageTitle": "admin", "message":"list" , 'user': req.user, 'posts':contentStore.posts});
@@ -143,11 +152,8 @@ app.get('/reload',user.can('administrate'), reloadContentStore)
 
 // set secret routes
 
-app.get('/secret/login',function(req,res){
-	res.render("guestlogin")
-})
-app.get('/secret/',user.can('keepasecret'),getTag)
-app.get('/secret/:pageName',user.can('keepasecret'),getPage)
+app.get('/tag/secret',user.can('viewprotected'),getTag)
+app.get('/secret/:pageName',user.can('viewprotected'),getPage)
 
 // set public routes
 
@@ -245,7 +251,8 @@ function getHome(req, res, next){
 }
 
 function getTag(req, res, next){
-	var tag = req.params.tag.toLowerCase()
+	if(req.route.path !== '/tag/secret') var tag = req.params.tag.toLowerCase()
+	else var tag = "secret"
 	var items = content.posts[tag]
 	if(items){	
 		res.render("pageList", { "headline" : tag,  "posts" : items, 'user': req.user})
