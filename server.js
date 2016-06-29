@@ -313,7 +313,7 @@ function reloadContentStore(req,res){
 	// this allows direct reloading of the content store from disk if it was edited manually.
 	contentStore = JSON.parse(fs.readFileSync(config.dataPath))
 	content = expandContentStore(contentStore)
-	res.send('reloaded contentStore.json')
+	res.redirect('/edit')
 }
 
 // spin
