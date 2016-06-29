@@ -55,7 +55,13 @@ user.use(function (req, action) {
 })
 
 user.use('administrate', function (req) {
-	if (req.user.role === 1) {
+	if (req.user.role === "admin") {
+		return true;
+	}
+})
+
+user.use('keepasecret', function (req) {
+	if (req.user.role === "admin" || req.user.role === "secretkeeper") {
 		return true;
 	}
 })
@@ -91,7 +97,12 @@ passport.use(new LocalStrategy({
 	},function(username, password, done) {
   		if(username === config.username && password === config.passwordMD5){
   			return done(null,{
-  				role:1,
+  				role:"admin",
+  				username:username
+  			})
+  		} else if(username === config.guestUsername && password === config.guestPasswordMD5){
+  			return done(null,{
+  				role:"secretkeeper",
   				username:username
   			})
   		} else return done(null,false, { message: 'There was a problem with your Username or Password.'})
@@ -126,8 +137,17 @@ app.get('/edit', user.can('administrate'), function(req,res){
 app.get('/edit/:index',user.can('administrate'), getEditPage)
 app.post('/edit/:index',user.can('administrate'), savePage)
 app.get('/delete/:index',user.can('administrate'), deletePage)
+app.post('/swap/:firstIndex/:secondIndex',user.can('administrate'), swapPages)
 
 app.get('/reload',user.can('administrate'), reloadContentStore)
+
+// set secret routes
+
+app.get('/secret/login',function(req,res){
+	res.render("guestlogin")
+})
+app.get('/secret/',user.can('keepasecret'),getTag)
+app.get('/secret/:pageName',user.can('keepasecret'),getPage)
 
 // set public routes
 
@@ -150,6 +170,11 @@ function processBodyCopy(copy){
 // this creates redundancies in the data that'd be tiresome to maintain in the
 // contentStore file, and is relatively cheap since we only do it on start
 // or if content changes.
+
+function updateContentAndSave(){
+	content = expandContentStore(contentStore)
+	fs.writeFile(config.dataPath,JSON.stringify(contentStore))
+}
 
 function expandContentStore(store){
 	var out = {
@@ -254,12 +279,27 @@ function deletePage(req,res){
 	var index = req.params.index
 	if(!isNaN(index)){
 		contentStore.posts.splice(index,1)
-		content = expandContentStore(contentStore)
-
-		// should handle if it can't save.
-		fs.writeFile(config.dataPath,JSON.stringify(contentStore))
+		updateContentAndSave()
 	}
 	res.redirect('/edit')
+}
+
+function swapPages(req,res){
+	var firstIndex = req.params.firstIndex
+	var secondIndex = req.params.secondIndex
+	if(contentStore.posts[firstIndex] && contentStore.posts[secondIndex]){
+		var swap = contentStore.posts[firstIndex]
+		contentStore.posts[firstIndex] = contentStore.posts[secondIndex]
+		contentStore.posts[secondIndex] = swap
+		updateContentAndSave()
+		res.json({
+			'status':200,
+			'content':content
+		})
+	} else {
+		res.status(400)
+		res.json({'status':400})
+	}
 }
 
 function reloadContentStore(req,res){
