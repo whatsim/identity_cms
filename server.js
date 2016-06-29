@@ -195,7 +195,7 @@ function expandContentStore(store){
 // public route handlers
 
 function getPage(req, res, next){
-	var page = req.params.pageName.toLowerCase()
+	var page = req.params.pageName.toLowerCase().replace("_"," ")
 	var tag = req.params.tag ? req.params.tag.toLowerCase() : "general"
 	if(content.posts && content.posts[tag] && content.posts[tag][page]){
 		res.render("page", { "headline" : content.posts[tag][page].title, "post" : content.posts[tag][page], 'user': req.user})
