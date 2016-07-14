@@ -275,7 +275,7 @@ function getEditPage(req,res){
 	} else {
 		var post = postTemplate
 	}
-	res.render("admin", { "pageTitle": "admin", "message":"list" , 'user': req.user, 'post':post, 'index':req.params.index, 'categories':contentStore.categories});
+	res.render("admin", { "pageTitle": "admin", "message":"edit" , 'user': req.user, 'post':post, 'index':req.params.index, 'categories':contentStore.categories});
 }
 
 function savePage(req,res){

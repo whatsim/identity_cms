@@ -9,6 +9,7 @@ html(lang="en")
 		#wrapper
 			canvas#histogram(width="1000px",height="125px")
 				img(src="/i/dummy.png")
+			include includes/nav.jade
 			#content
 				.block
 					.rule
@@ -16,7 +17,7 @@ html(lang="en")
 						if (message.length)
 							.title
 								h1
-									#{message}
+									| #{message}
 						form(action="/edit/#{index}",method="post")
 							input(type="text",size="10",maxlength="60",id="title",name="title",placeholder="title",value="#{post.title}")
 							p.formText tag
@@ -40,4 +41,3 @@ html(lang="en")
 					.clear
 				include includes/foot.jade
 
-			include includes/nav.jade
