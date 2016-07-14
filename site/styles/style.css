@@ -368,3 +368,6 @@ iframe {
 #spacer {
 	height:19px;
 }
+.up, .down {
+	cursor:pointer;
+}

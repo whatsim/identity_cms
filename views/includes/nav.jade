@@ -30,3 +30,6 @@
 				|<a href="/edit">Posts</a>
 			li
 				|<a href="/logout">Logout</a>
+	- else if (user && user.role !== 'admin')
+		ul
+				|<a href="/logout">Logout</a>

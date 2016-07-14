@@ -1,20 +1,36 @@
-//for histogram
+//
+// Hey reader. Pardon my mess.
+//
+// I wrote most of this JS in college, I've done some touch up as part of
+// the 2016 rewrite of IdentityCMS but not much. If I were going to do it
+// today I'd avoid the use of jQuery I expect, among other excesses (a 
+// point object? what?), but the fact of the matter is that'd be motivated
+// more by vanity than practicality, and other parts of the stack needed
+// attention more urgently. So, with exemption of the HiDPI image loading,
+// the client JS is left in the state it was originally deployed in.
+//
+// The whole CMS is available at https://github.com/whatsim/identity_cms
+// The server code is more emblematic of my current style, if that is of
+// interest to you.
+//
+
+// For histogram
 var canvas,
 	context;
 var pointsList = new Array();
 var max = 0;
 
-//for hero image preloader
+// For hero image preloader
 var img = new Image();
 	img.id = "imageTransition";
 var loading;
 
-//for both preloader and histogram
+// For both preloader and histogram
 var histoImg,
 	hero,
 	activeThumb;
 
-//jquery elems for ease
+// jQuery elems for ease
 var	$body,
 	$imgLinks,
 	$projects,
@@ -25,14 +41,13 @@ var	$body,
 
 var mul = window.devicePixelRatio;
 
+if(window.location.hostname == "willruby.com"){
+	window.location = "http://www.willruby.com" + window.location.pathname;
+}
 
 $(document).ready(function(){
-
-	if(window.location.hostname == "willruby.com"){
-		window.location = "http://www.willruby.com" + window.location.pathname;
-	}
 	
-	//init jquery things
+	// init jquery things
 	$body = $('body');
 	$imgLinks = $body.find('.thumbs');
 	$projects = $body.find('.project'); 
@@ -41,7 +56,7 @@ $(document).ready(function(){
 	$title = $body.find('.title');
 	$hero = $body.find('#hero');
 	
-	//traditional elements
+	// traditional elements
 	loading = document.getElementById('loading');	
 	canvas = document.querySelector('canvas');
 	histoImg = document.getElementById('histoImg');
@@ -50,25 +65,25 @@ $(document).ready(function(){
 	canvas.width = mul * canvas.width;
 	canvas.height = mul * canvas.height;
 
-	//prepare drawing context
+	// prepare drawing context
 	if(isCanvasSupported()){
 		context = canvas.getContext('2d');
 
-		//calls for histogram render update
-		window.requestAnimationFrame(update,30);
+		// calls for histogram render update
+		window.requestAnimationFrame(update);
 	}
 	
-	//force the loader to fire (also renders histogram)
+	// force the loader to fire (also renders histogram)
 	if(histoImg){
 		img.src = histoImg.src;
 	}
 	
-	//inits histogram points for animation
+	// inits histogram points for animation
 	for (var i = 0; i < 255; i++){
 		pointsList[i] = new Point();
 	}
 	
-	//image swap, using jquery click for convience
+	// image swap, using jquery click for convience
 	$imgLinks.click(function(){
 		loading.textContent = "loading...";
 		$('.active').removeClass('active');
@@ -201,9 +216,9 @@ function update(){
 	context.lineWidth = 1*mul;
 	context.stroke();
 
-	//prevents running once animation is wrapped up
+	// prevents running once animation is wrapped up
 	if (runFlag) {
-		window.requestAnimationFrame(update,20);
+		window.requestAnimationFrame(update);
 	}
 };
 

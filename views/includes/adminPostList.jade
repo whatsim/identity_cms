@@ -1,4 +1,4 @@
-.block
+.block#posts
 	.rule
 	.two
 		.title
@@ -19,4 +19,10 @@
 									| delete
 								a.action(href="/edit/#{key}")
 									| edit
+								- if(key != 0)
+									a.action.up
+										| /\
+								- if (posts.length != key + 1)
+									a.action.down
+										| \/
 	.clear

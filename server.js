@@ -46,9 +46,9 @@ const viewsPath = config.viewsPath
 const user = new ConnectRoles({
 	failureHandler: function (req, res, action) {
 		res.status(403);
-		if(req.route.path === '/secret/:pageName' || req.route.path === '/tag/secret'){
+		if(req.route && (req.route.path === '/secret/:pageName' || req.route.path === '/tag/secret')){
 			res.render("login", { "pageTitle": "login", "message":"", "headline":"login", 'user': req.user, 'redirectURL' : req.url });
-		} else res.render('error', { status:403, "pageTitle": "403", 'user': req.user});
+		} else res.render('error', { status:404, "pageTitle": "404", 'user': req.user});
 	}
 });
 
@@ -122,6 +122,8 @@ passport.deserializeUser(function(user, done) {
 
 // admin routes 
 
+app.use('/admin/', user.can('administrate'), serveStatic('admin'));
+
 app.get('/logout', function(req, res){
 	req.logout();
 	res.redirect('/login');
@@ -132,11 +134,13 @@ app.get('/login', function(req,res){
 })
 
 app.post('/login',passport.authenticate('local'),function(req,res){
-	if(req.body.url) res.redirect(req.body.url)
 	if(req.isAuthenticated()){
-		if(req.user.role === 'admin') res.redirect('/edit')
-		else if(req.user.role === 'guest') res.redirect('/tag/secret')
-		else res.redirect('/')
+		if(req.body.url) res.redirect(req.body.url)
+		else {
+			if(req.user.role === 'admin') res.redirect('/edit')
+			else if(req.user.role === 'guest') res.redirect('/tag/secret')
+			else res.redirect('/')
+		}
 	} else res.redirect('/login')
 });
 
@@ -300,10 +304,25 @@ function swapPages(req,res){
 		contentStore.posts[firstIndex] = contentStore.posts[secondIndex]
 		contentStore.posts[secondIndex] = swap
 		updateContentAndSave()
-		res.json({
-			'status':200,
-			'content':content
-		})
+		// kind of scuz, but this sends but the rendered post list.
+		// keeps the list render code in one spot on the server,
+		// at least.
+		res.render('includes/adminPostList', {
+				'user': req.user,
+				'posts':contentStore.posts
+			},
+			function(e,list){
+				if(!e) {
+					res.json({
+						list:list,
+						status:200
+					})
+				} else {
+					res.status(400)
+					res.json({'status':400})
+				}
+			}
+		)
 	} else {
 		res.status(400)
 		res.json({'status':400})
