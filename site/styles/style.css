@@ -289,25 +289,33 @@ input, textarea, select, #submit {
 	padding:5px 5px;
 }
 textarea {
-	width:350px;
+	width:644px;
 	height:50px;
 	display:block;
 }
 #title, #featuredImage {
-	width:350px;
+	width:644px;
 }
 #submit {
 	margin:15px 0 5px;
-	width:362px;
+	width:656px;
 	border:1px solid #222;
 	background:#111;
 	color:white;
+	padding:20px;
+}
+#submit:hover {
+	background:#333;
+}
+.login #submit {
+	font-size:1.5em;
 }
 #name, #password {
-	width:162px;
-}
-#password {
-	margin: 0 0 0 14px;
+	width:614px;
+	font-size:1.5em;
+	display: inline-block;
+	padding:20px;
+	text-align: center;
 }
 .copy ul {
 	padding:0;
@@ -320,11 +328,14 @@ textarea {
 	text-decoration:underline;
 }
 .copy p {
-	break-after:avoid-column;
-	break-inside:avoid-column;
+	-moz-column-break-inside:avoid;
+	-webkit-column-break-inside:avoid;
+	column-break-inside:avoid;
 	font-family:"Din Text Pro Light", Din, Verdana, sans-serif;
 	font-size:9pt;
 	line-height: 13.33pt;
+	margin:0;
+	padding:0 0 5.33pt;
 }
 #post {
 	height:175px;
