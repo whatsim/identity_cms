@@ -10,10 +10,10 @@ body {
 	margin:0;
     -webkit-text-size-adjust: 100%;
     font-size-adjust:100%;
-
+    overflow-x:hidden;
 }
 #histogram {
-	width:600px;
+	width:765px;
 	height:125px;
 }
 #histogram canvas {
