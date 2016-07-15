@@ -145,11 +145,7 @@ window.addEventListener('load',function(){
 	}
 });
 
-window.addEventListener('resize',function(){
-	console.log('hey')
-	update()
-
-},false)
+window.addEventListener('resize',update,false)
 
 function loadImage(el,source,id){
 	if(!el.hasClass('active')){
