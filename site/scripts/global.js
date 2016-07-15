@@ -85,15 +85,15 @@ $(document).ready(function(){
 	// prepare drawing context
 	if(isCanvasSupported()){
 		context = canvas.getContext('2d');
-
 		// calls for histogram render update
 		window.requestAnimationFrame(update);
 	}
 	
 	// force the loader to fire (also renders histogram)
 	if(histoImg){
-		if($first.length) img.src = $first[0].getAttribute(imageMultiple)
-		else img.src = histoImg.src
+		if($projects.length){
+			img.src = histoImg.src
+		} else img.src = histoImg.getAttribute(imageMultiple)
 	}
 	
 	// inits histogram points for animation
@@ -112,7 +112,7 @@ $(document).ready(function(){
 		return false;
 	});
 	
-	if($hero){
+	if($imgLinks.length > 1){
 		$hero.click(heroAdvance);
 
 		function heroAdvance(){
@@ -126,6 +126,14 @@ $(document).ready(function(){
 			
 			loadImage($next,source,id)
 		}
+	} else if(loading){
+		loading.parentNode.removeChild(loading)
+	}
+
+	if($projects){
+		$projects.mouseenter(function(){
+			img.src = $(this).find('img')[0].src;
+		});
 	}
 	
 });
