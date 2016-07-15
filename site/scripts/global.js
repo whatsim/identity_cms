@@ -33,6 +33,7 @@ img.onload = function(){
 			loading.style.display = "none";
 			histoImg.src = img.src;
 			setTimeout(cleanupTransition,20);
+			loading.textContent = "click to advance";
 		});	
 	}
 }
@@ -112,10 +113,11 @@ $(document).ready(function(){
 	});
 	
 	if($hero){
-		$hero.click(function(){
+		$hero.click(heroAdvance);
+
+		function heroAdvance(){
 			loading.textContent = "loading...";
 			var $next = $body.find('.active').removeClass('active').parent().next().children('img');
-			console.log($next)
 			if(!$next[0]){
 				$next = $first
 			}
@@ -123,16 +125,6 @@ $(document).ready(function(){
 			var id = $next[0].getAttribute('videoID')
 			
 			loadImage($next,source,id)
-
-		});
-		if($imgLinks.length){
-			$hero.hover(function(){
-				loading.style.display = "block";
-				loading.textContent = "click to advance";
-			}, function(){
-				loading.style.display = "none";
-				loading.textContent = "loading...";
-			});
 		}
 	}
 	
