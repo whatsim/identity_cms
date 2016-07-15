@@ -28,7 +28,7 @@ html(lang="en")
 								| featured - 
 								input(type="checkbox",name="featured",value="true",checked=post.featured)
 							input(type="text",size="10",maxlength="60",id="featuredImage",name="featuredImage",placeholder="featured image",value="#{post.featuredImage}")
-							p.formText media: image [1x] [2x] / video [vimeo id]
+							p.formText media: image [1x] [2x] [thumb] / video [vimeo id] [thumb]
 							textarea(name="media")
 								| #{post.media}
 							p.formText post

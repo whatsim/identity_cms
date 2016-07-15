@@ -225,8 +225,8 @@ a:hover {
 	background:black;
 	position:absolute;
 	padding:2px 5px;
-	top:218px;
-	left:290px;
+	top:275px;
+	left:440px;
 	width:100px;
 	text-align:center;
 	font-family:Inconsolata,monospace;
@@ -249,7 +249,7 @@ a:hover {
 	font-weight:400;
 	padding:1px 6px;
 }
-.project a:hover, .hover {
+.project:hover a {
 	background:white !important;
 	color:black !important;
 }
@@ -344,6 +344,8 @@ iframe {
 	position:absolute;
 	top:10px;
 	left:10px;
+	width:980px;
+	height:551px;
 }
 .copy a {
 	font-weight:400;

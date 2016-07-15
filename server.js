@@ -215,8 +215,10 @@ function expandContentStore(store){
 				if(values[0] === 'image'){
 					m['1x'] = values[1] ? values[1] : ''
 					m['2x'] = values[2] ? values[2] : ''
+					m.thumb = values[3] ? values[3] : ''
 				} else {
-					m.id = values[1]
+					m.id = values[1] ? values[1] : ''
+					m.thumb = values[2] ? values[2] : ''
 				}
 				if(m.type) media.push(m)
 			})

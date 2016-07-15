@@ -1,10 +1,10 @@
 - if (post.media[0]){
 	#hero
 		- if(post.media[0].type === 'video') {
-			iframe(src="http://player.vimeo.com/video/#{post.media[0].id}",width="680",height="452",frameborder="0",webkitAllowFullScreen,mozallowfullscreen,allowFullScreen)
-			img#histoImg.heroImg(src="/i/blank.png")
+			iframe(src="http://player.vimeo.com/video/#{post.media[0].id}",width="100%",height="100%",frameborder="0",webkitAllowFullScreen,mozallowfullscreen,allowFullScreen)
+			img#histoImg.heroImg(src="/images/blank.png")
 		- } else {
-			img#histoImg.heroImg(src="#{post.media[0]['1x']}")
+			img#histoImg.heroImg(src="#{post.media[0]['1x']}",1x="#{post.media[0]['1x']}",2x="#{post.media[0]['2x']}")
 		- }
 		- if (post.media.length > 1)
 		#loading
@@ -13,6 +13,24 @@
 	.rule
 - }
 .block
+	- if (post.media.length > 1 || post.sidebar.length)
+		.one
+			- if (post.media.length > 1)
+				- var i = 0;
+				- post.media.forEach(function(item){
+					- if(item.type !== "video"){
+						a.thumbs(href="#{item['1x']}")
+							img(src="#{item.thumb}",1x="#{item['1x']}",2x="#{item['2x']}" class="#{i == 0 ? 'active' : ''}")
+					- } else {
+						a.thumbs(href="http://vimeo.com/#{item.id}")
+							img(src="#{item.thumb}" videoID="#{item.id}" class="#{i == 0 ? 'active' : ''}")
+					- }
+					-i++
+				- })
+			- if (post.sidebar.length)
+				- if (post.tag.length && post.tag != "general")	
+					#spacer
+				| !{post.sidebar}
 	.two
 		- if (post.title.length)
 			.title
@@ -23,32 +41,4 @@
 		- if (post.post.length)
 			.copy
 				| !{post.post}
-	- if (post.media.length > 1 || post.sidebar.length)
-		.one
-			- if (post.media.length > 1)
-				- var i = 0;
-				- if (post.process == "true")	
-					a(href="/process/#{post.title.replace(/ /g,'_')}").tags.processLink Process Work
-				- post.media.forEach(function(item){
-					- if(item.type == "video"){
-						-if(i == 0)
-							a.thumbs(href="/i/#{item}")
-								img.active(src="#{item}")
-						-else
-							a.thumbs(href="/i/#{item}")
-								img(src="#{item}")
-					- } else {
-						-if(i == 0)
-							a.thumbs(href="http://vimeo.com/#{item.id}")
-								img.active(src="#{item.id}")
-						- else
-							a.thumbs(href="http://vimeo.com/#{item.id}")
-								img(src="#{item.id}")
-					- }
-					-i++
-				- })
-			- if (post.sidebar.length)
-				- if (post.tag.length && post.tag != "general")	
-					#spacer
-				| !{post.sidebar}
 	.clear

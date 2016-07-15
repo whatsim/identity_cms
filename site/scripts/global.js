@@ -23,12 +23,25 @@ var max = 0;
 // For hero image preloader
 var img = new Image();
 	img.id = "imageTransition";
+
+img.onload = function(){
+	if(context) createHistogram();
+	if(hero){
+		hero.appendChild(img);
+		img.style.display = "none";
+		$('#imageTransition').fadeIn(75, function(){
+			loading.style.display = "none";
+			histoImg.src = img.src;
+			setTimeout(cleanupTransition,20);
+		});	
+	}
+}
+
 var loading;
 
 // For both preloader and histogram
 var histoImg,
-	hero,
-	activeThumb;
+	hero;
 
 // jQuery elems for ease
 var	$body,
@@ -40,6 +53,7 @@ var	$body,
 	$hero;
 
 var mul = window.devicePixelRatio;
+var imageMultiple = mul > 1 ? "2x" : "1x"
 
 if(window.location.hostname == "willruby.com"){
 	window.location = "http://www.willruby.com" + window.location.pathname;
@@ -85,26 +99,26 @@ $(document).ready(function(){
 	
 	// image swap, using jquery click for convience
 	$imgLinks.click(function(){
-		loading.textContent = "loading...";
-		$('.active').removeClass('active');
-		activeThumb = this.children[0];
-		$(activeThumb).addClass('active');
-		var source = activeThumb.src.replace("/t","");
-		if(histoImg.src != source){
-			var link = $(this)[0].href;
-			if(link.indexOf("vimeo") < 0){
+		var activeThumb = this.children[0];
+		var source = activeThumb.getAttribute(imageMultiple)
+		var id = activeThumb.getAttribute('videoID')
+		
+		if(!$(this).find('img').hasClass('active')){
+			if(!id){
 				if(!$('iframe').length){
 					loading.style.display = "block";
 				} else {
 					$('iframe').remove();
 				}
 				img.src = source;
-				if((img.height-30)>0) loading.style.top = (img.height/2 - 8)+"px";
 			} else {
 				if($('iframe')) $('iframe').remove();
-				$hero.append('<iframe src="http://player.vimeo.com/video/'+link.substring(17)+'" width="680" height="452" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
-				img.src = "http://www.willruby.com/i/blank.png";
+				$hero.append('<iframe src="http://player.vimeo.com/video/'+id+'" width="100%" height="100%" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
+				img.src = "/images/blank.png";
 			}
+			loading.textContent = "loading...";
+			$('.active').removeClass('active');
+			$(activeThumb).addClass('active');
 		}
 		return false;
 	});
@@ -124,11 +138,10 @@ $(document).ready(function(){
 						$('iframe').remove();
 					}
 					img.src = source;
-					if((img.height-30)>0) loading.style.top = (img.height/2 - 8)+"px";
 				} else {
 					if($('iframe')) $('iframe').remove();
 					$hero.append('<iframe src="http://player.vimeo.com/video/'+link.substring(17)+'" width="680" height="452" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
-					img.src = "http://www.willruby.com/i/blank.png";
+					img.src = "/images/blank.png";
 				}
 			} else {
 				var first = $('.one img')[0];
@@ -142,11 +155,10 @@ $(document).ready(function(){
 						$('iframe').remove();
 					}
 					img.src = source;
-					if((img.height-30)>0) loading.style.top = (img.height/2 - 8)+"px";
 				} else {
 					if($('iframe')) $('iframe').remove();
 					$hero.append('<iframe src="http://player.vimeo.com/video/'+link.substring(17)+'" width="680" height="452" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
-					img.src = "http://www.willruby.com/i/blank.png";
+					img.src = "/images/blank.png";
 				}
 			}
 		});
@@ -161,15 +173,6 @@ $(document).ready(function(){
 		}
 	}
 	
-	if($projects){
-		$projects.hover(function(){
-			img.src = $(this).find('img')[0].src;
-			$(this).children('.textLink').addClass('hover');
-		},function(){
-			$(this).children('.textLink').removeClass('hover');
-		});
-	}
-	
 });
 
 $(window).load(function(){
@@ -179,18 +182,7 @@ $(window).load(function(){
 	}
 });
 
-img.onload = function(){
-	if(context) createHistogram();
-	if(hero){
-		hero.appendChild(img);
-		img.style.display = "none";
-		$('#imageTransition').fadeIn(75, function(){
-			loading.style.display = "none";
-			histoImg.src = img.src;
-			setTimeout(cleanupTransition,20);
-		});	
-	}
-}
+
 
 function cleanupTransition(){
 	if(hero.lastChild == img) hero.removeChild(img);
@@ -204,12 +196,13 @@ function createHistogram(){
 
 function update(){
 	runFlag = false;
-	canvas.width = canvas.width;
+	canvas.width = canvas.clientWidth * 2;
 	context.beginPath();
 	for (var i = 0; i < 255; i++){
 		pointsList[i].update();
-		context.moveTo(.5*mul+(i*4)*mul,0);
-		context.lineTo(.5*mul+(i*4)*mul,(pointsList[i].y+2)*mul);
+		var x = canvas.clientWidth/255
+		context.moveTo(.5*mul+(i*x)*mul,0);
+		context.lineTo(.5*mul+(i*x)*mul,(pointsList[i].y+2)*mul);
 	}
 	context.closePath();
 	context.strokeStyle = '#333';
@@ -252,7 +245,6 @@ function generateHistogram(imageData) {
 	}
 	
 	for (var i = 0; i < 255; i++){
-		console.log(brightness[i]/max*canvas.clientHeight,max)
 
 		pointsList[i].targetY = brightness[i]/max*canvas.clientHeight;
 	}	
