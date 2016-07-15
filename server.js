@@ -133,15 +133,13 @@ app.get('/login', function(req,res){
 	res.render("login", { "pageTitle": "login", "message":"", "headline":"login", 'user': req.user });
 })
 
-app.post('/login',passport.authenticate('local'),function(req,res){
-	if(req.isAuthenticated()){
-		if(req.body.url) res.redirect(req.body.url)
-		else {
-			if(req.user.role === 'admin') res.redirect('/edit')
-			else if(req.user.role === 'guest') res.redirect('/tag/secret')
-			else res.redirect('/')
-		}
-	} else res.redirect('/login')
+app.post('/login',passport.authenticate('local', {failureRedirect:'/login'}),function(req,res){
+	if(req.body.url) res.redirect(req.body.url)
+	else {
+		if(req.user.role === 'admin') res.redirect('/edit')
+		else if(req.user.role === 'guest') res.redirect('/tag/secret')
+		else res.redirect('/')
+	}
 });
 
 app.get('/edit', user.can('administrate'), function(req,res){

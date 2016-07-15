@@ -159,6 +159,9 @@ a:hover {
 	display: block;
 	float:left;
 }
+.one + .two {
+	border-top:1px dotted black;
+}
 .title h1 {
 	font-family:Inconsolata, monospace;
 	font-weight:400;

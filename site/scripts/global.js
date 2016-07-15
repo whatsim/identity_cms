@@ -229,7 +229,6 @@ function generateHistogram(imageData) {
 	}
 	
 	for (var i = 0; i < 255; i++){
-		console.log(max)
 		pointsList[i].targetY = brightness[i]/max*canvas.clientHeight;
 	}	
 }

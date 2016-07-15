@@ -22,14 +22,12 @@
 			|<a href="/about">About</a>
 		li
 			|<a href="/colophon">Colophon</a>
-	- if (user && user.role === 'admin')
-		ul
+	ul
+		- if (user && user.role === 'admin')
 			li
 				|<a href="/edit/new">New Post</a>
 			li
 				|<a href="/edit">Posts</a>
+		- if (user)
 			li
-				|<a href="/logout">Logout</a>
-	- else if (user && user.role !== 'admin')
-		ul
 				|<a href="/logout">Logout</a>
