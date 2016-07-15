@@ -29,7 +29,7 @@ img.onload = function(){
 	if(hero){
 		hero.appendChild(img);
 		img.style.display = "none";
-		$('#imageTransition').fadeIn(75, function(){
+		$body.find('#imageTransition').fadeIn(75, function(){
 			loading.style.display = "none";
 			histoImg.src = img.src;
 			setTimeout(cleanupTransition,20);
@@ -50,7 +50,8 @@ var	$body,
 	$copy,
 	$title,
 	$one,
-	$hero;
+	$hero,
+	$first;
 
 var mul = window.devicePixelRatio;
 var imageMultiple = mul > 1 ? "2x" : "1x"
@@ -69,6 +70,7 @@ $(document).ready(function(){
 	$one = $body.find('.one');
 	$title = $body.find('.title');
 	$hero = $body.find('#hero');
+	$first = $body.find('.one img').first()
 	
 	// traditional elements
 	loading = document.getElementById('loading');	
@@ -89,7 +91,8 @@ $(document).ready(function(){
 	
 	// force the loader to fire (also renders histogram)
 	if(histoImg){
-		img.src = histoImg.src;
+		if($first.length) img.src = $first[0].getAttribute(imageMultiple)
+		else img.src = histoImg.src
 	}
 	
 	// inits histogram points for animation
@@ -99,68 +102,28 @@ $(document).ready(function(){
 	
 	// image swap, using jquery click for convience
 	$imgLinks.click(function(){
-		var activeThumb = this.children[0];
-		var source = activeThumb.getAttribute(imageMultiple)
-		var id = activeThumb.getAttribute('videoID')
+		var activeThumb = $(this).find('img');
+		var source = activeThumb[0].getAttribute(imageMultiple)
+		var id = activeThumb[0].getAttribute('videoID')
 		
-		if(!$(this).find('img').hasClass('active')){
-			if(!id){
-				if(!$('iframe').length){
-					loading.style.display = "block";
-				} else {
-					$('iframe').remove();
-				}
-				img.src = source;
-			} else {
-				if($('iframe')) $('iframe').remove();
-				$hero.append('<iframe src="http://player.vimeo.com/video/'+id+'" width="100%" height="100%" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
-				img.src = "/images/blank.png";
-			}
-			loading.textContent = "loading...";
-			$('.active').removeClass('active');
-			$(activeThumb).addClass('active');
-		}
+		loadImage(activeThumb,source,id)
+
 		return false;
 	});
 	
 	if($hero){
 		$hero.click(function(){
 			loading.textContent = "loading...";
-			var $next = $('.active').removeClass('active').parent().next().children('img');
-			if ($next.length) {
-				$next.addClass('active');
-				var source = $next[0].src.replace("/t","");
-				var link = $next.parent()[0].href;
-				if(link.indexOf("vimeo") < 0){
-					if(!$('iframe').length){
-						loading.style.display = "block";
-					} else {
-						$('iframe').remove();
-					}
-					img.src = source;
-				} else {
-					if($('iframe')) $('iframe').remove();
-					$hero.append('<iframe src="http://player.vimeo.com/video/'+link.substring(17)+'" width="680" height="452" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
-					img.src = "/images/blank.png";
-				}
-			} else {
-				var first = $('.one img')[0];
-				$(first).addClass('active');
-				var source = first.src.replace("/t","");
-				var link = first.parentNode.href;
-				if(link.indexOf("vimeo") < 0){
-					if(!$('iframe').length){
-						loading.style.display = "block";
-					} else {
-						$('iframe').remove();
-					}
-					img.src = source;
-				} else {
-					if($('iframe')) $('iframe').remove();
-					$hero.append('<iframe src="http://player.vimeo.com/video/'+link.substring(17)+'" width="680" height="452" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
-					img.src = "/images/blank.png";
-				}
+			var $next = $body.find('.active').removeClass('active').parent().next().children('img');
+			console.log($next)
+			if(!$next[0]){
+				$next = $first
 			}
+			var source = $next[0].getAttribute(imageMultiple)
+			var id = $next[0].getAttribute('videoID')
+			
+			loadImage($next,source,id)
+
 		});
 		if($imgLinks.length){
 			$hero.hover(function(){
@@ -175,14 +138,39 @@ $(document).ready(function(){
 	
 });
 
-$(window).load(function(){
+window.addEventListener('load',function(){
 	var oneHeight = $one.outerHeight()-$title.outerHeight()-40;
 	if(oneHeight > $copy.height()){
 		$copy.height($one.outerHeight()-$title.outerHeight()-40)
 	}
 });
 
+window.addEventListener('resize',function(){
+	console.log('hey')
+	update()
 
+},false)
+
+function loadImage(el,source,id){
+	if(!el.hasClass('active')){
+		var $iframe = $body.find('iframe')
+		if(!id){
+			if(!$iframe.length){
+				loading.style.display = "block";
+			} else {
+				$iframe.remove();
+			}
+			img.src = source;
+		} else {
+			if($iframe) $iframe.remove();
+			$hero.append('<iframe src="http://player.vimeo.com/video/'+id+'" width="100%" height="100%" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
+			img.src = "/images/blank.png";
+		}
+		loading.textContent = "loading...";
+		$body.find('.active').removeClass('active');
+		el.addClass('active');
+	}
+}
 
 function cleanupTransition(){
 	if(hero.lastChild == img) hero.removeChild(img);
