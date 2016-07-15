@@ -79,8 +79,8 @@ $(document).ready(function(){
 	histoImg = document.getElementById('histoImg');
 	hero = document.getElementById('hero');
 	
-	canvas.width = mul * canvas.width;
-	canvas.height = mul * canvas.height;
+	canvas.width = mul * canvas.clientWidth;
+	canvas.height = mul * canvas.clientHeight;
 
 	// prepare drawing context
 	if(isCanvasSupported()){
@@ -180,7 +180,7 @@ function createHistogram(){
 
 function update(){
 	runFlag = false;
-	canvas.width = canvas.clientWidth * 2;
+	canvas.width = canvas.clientWidth * mul;
 	context.beginPath();
 	for (var i = 0; i < 255; i++){
 		pointsList[i].update();
@@ -220,7 +220,7 @@ function generateHistogram(imageData) {
 			total += imageData.data[i*4+l];
 		}
 		total = Math.round(total/3);
-		if(brightness[total] < 2000) brightness[total] += 1/(1+(brightness[total]/100));
+		brightness[total] += 1/(1+(brightness[total]/100));
 		total = 0;
 	}
 	max = 0;
@@ -229,7 +229,7 @@ function generateHistogram(imageData) {
 	}
 	
 	for (var i = 0; i < 255; i++){
-
+		console.log(max)
 		pointsList[i].targetY = brightness[i]/max*canvas.clientHeight;
 	}	
 }
