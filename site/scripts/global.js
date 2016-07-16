@@ -113,9 +113,7 @@ $(document).ready(function(){
 	});
 	
 	if($imgLinks.length > 1){
-		$hero.click(heroAdvance);
-
-		function heroAdvance(){
+		$hero.click(function (){
 			loading.textContent = "loading...";
 			var $next = $body.find('.active').removeClass('active').parent().next().children('img');
 			if(!$next[0]){
@@ -125,7 +123,7 @@ $(document).ready(function(){
 			var id = $next[0].getAttribute('videoID')
 			
 			loadImage($next,source,id)
-		}
+		});
 	} else if(loading){
 		loading.parentNode.removeChild(loading)
 	}
