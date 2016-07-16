@@ -337,4 +337,4 @@ function reloadContentStore(req,res){
 }
 
 // spin
-app.listen(8080)
+app.listen(config.port)

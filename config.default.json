@@ -7,5 +7,6 @@
   "username" : "username",
   "passwordMD5" : "MD5STRING",
   "guestUsername" : "guestusername",
-  "guestPasswordMD5" : "MD5STRING"
+  "guestPasswordMD5" : "MD5STRING",
+  "port":"8080"
 }
