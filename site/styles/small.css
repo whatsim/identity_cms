@@ -38,6 +38,9 @@ body {
 	position:relative;
 	background:black;
 }
+#hero:hover #loading {
+	display: block !important;
+}
 .rule {
 	border-bottom:1px dotted black;
 }
