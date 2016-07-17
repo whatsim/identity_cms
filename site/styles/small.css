@@ -38,9 +38,6 @@ body {
 	position:relative;
 	background:black;
 }
-#hero:hover #loading {
-	display: block !important;
-}
 .rule {
 	border-bottom:1px dotted black;
 }
@@ -49,7 +46,7 @@ body {
 	border:10px solid black;
 	display:block;
 	width:580px;
-	height:344px;
+	height:326px;
 }
 
 .project img {
@@ -304,6 +301,7 @@ input, textarea, select, #submit {
 	border:1px solid #ccc;
 	margin:5px 0 0 0;
 	padding:5px 5px;
+	-webkit-appearance: none;
 }
 textarea {
 	width:568px;
