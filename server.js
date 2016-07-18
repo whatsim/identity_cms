@@ -154,7 +154,7 @@ app.get('/reload',user.can('administrate'), reloadContentStore)
 
 // set secret routes
 
-app.use('/secret/', user.can('viewprotected'), serveStatic('secret'));
+app.use('/secret-assets/', user.can('viewprotected'), serveStatic('secret'));
 app.get('/tag/secret',user.can('viewprotected'),getTag)
 app.get('/secret/:pageName',user.can('viewprotected'),getPage)
 
