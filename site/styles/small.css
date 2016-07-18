@@ -103,9 +103,6 @@ ul+ul {
 .one ul {
 	margin-left: 10px;
 }
-.one ul a {
-	text-decoration: underline;
-}
 a {
 	color:#000;
 	font-weight:400;
