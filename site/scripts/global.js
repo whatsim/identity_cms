@@ -25,7 +25,7 @@ var img = new Image();
 	img.id = "imageTransition";
 
 img.onload = function(){
-	if(img.complete && context) createHistogram();
+	if(context) createHistogram();
 	if(hero){
 		hero.appendChild(img);
 		img.style.display = "none";
@@ -155,7 +155,7 @@ function loadImage(el,source,id){
 				$iframe.remove();
 			}
 			img.src = source;
-			if(source.search('gif') != -1) img.onload()
+			if(source.search('gif') != -1) histoImg.src = source
 		} else {
 			if($iframe) $iframe.remove();
 			$hero.append('<iframe src="http://player.vimeo.com/video/'+id+'" width="100%" height="100%" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
