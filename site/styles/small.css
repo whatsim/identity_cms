@@ -341,9 +341,6 @@ textarea {
     font-size: 13pt;
     line-height: 17pt;
 }
-.one ul a {
-	text-decoration:underline;
-}
 .two + .one {
 	border-top:1px dotted black;
 	width:100%;
