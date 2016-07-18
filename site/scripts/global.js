@@ -155,6 +155,7 @@ function loadImage(el,source,id){
 				$iframe.remove();
 			}
 			img.src = source;
+			if(source.find('gif') != -1) img.onload()
 		} else {
 			if($iframe) $iframe.remove();
 			$hero.append('<iframe src="http://player.vimeo.com/video/'+id+'" width="100%" height="100%" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>');
