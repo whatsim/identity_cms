@@ -194,7 +194,7 @@ function expandContentStore(store){
 		for(var i = 0; i < store.posts.length; i++){
 			var lowerTag = store.posts[i].tag.toLowerCase()
 			if(store.posts[i].featured){
-				out.featured.push({
+				out.featured.splice(0,0,{
 					tag:lowerTag,
 					title:store.posts[i].title
 				})
