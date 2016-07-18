@@ -13,6 +13,19 @@
 	.rule
 - }
 .block
+	- if (post.media.length > 1)
+		.one.thumbs
+			- var i = 0;
+			- post.media.forEach(function(item){
+				- if(item.type !== "video"){
+					a.thumbs(href="#{item['1x']}")
+						img(src="#{item.thumb}",1x="#{item['1x']}",2x="#{item['2x']}" class="#{i == 0 ? 'active' : ''}")
+				- } else {
+					a.thumbs(href="http://vimeo.com/#{item.id}")
+						img(src="#{item.thumb}" videoID="#{item.id}" class="#{i == 0 ? 'active' : ''}")
+				- }
+				-i++
+			- })
 	.two
 		- if (post.title.length)
 			.title
@@ -23,22 +36,9 @@
 		- if (post.post.length)
 			.copy
 				| !{post.post}
-	- if (post.media.length > 1 || post.sidebar.length)
+	- if (post.sidebar.length)
 		.one
-			- if (post.media.length > 1)
-				- var i = 0;
-				- post.media.forEach(function(item){
-					- if(item.type !== "video"){
-						a.thumbs(href="#{item['1x']}")
-							img(src="#{item.thumb}",1x="#{item['1x']}",2x="#{item['2x']}" class="#{i == 0 ? 'active' : ''}")
-					- } else {
-						a.thumbs(href="http://vimeo.com/#{item.id}")
-							img(src="#{item.thumb}" videoID="#{item.id}" class="#{i == 0 ? 'active' : ''}")
-					- }
-					-i++
-				- })
-			- if (post.sidebar.length)
-				- if (post.tag.length && post.tag != "general")	
-					#spacer
-				| !{post.sidebar}
+			- if (post.tag.length && post.tag != "general")	
+				#spacer
+			| !{post.sidebar}
 	.clear

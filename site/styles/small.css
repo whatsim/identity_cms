@@ -101,7 +101,7 @@ ul+ul {
 	padding:6pt 0 12pt;
 }
 .one ul {
-	
+	margin-left: 10px;
 }
 .one ul a {
 	text-decoration: underline;
@@ -153,9 +153,13 @@ a:hover {
 	clear:both;
 }
 .one {
-	padding:0 10px 10px;
+	padding:10px 0;
 	display: block;
 	float:left;
+}
+.one.thumbs {
+	margin-left: -5px;
+	padding:5px 0 0;	
 }
 .one + .two {
 	border-top:1px dotted black;
@@ -228,8 +232,8 @@ a:hover {
 	background:white;
 }
 .two li {
-	margin:0 0 5.33pt 13pt;
-	text-indent:-13pt;
+	margin: 0 0 5.33pt 18pt;
+    text-indent: -18pt;
 	list-style:inside;
 	list-style-type:lower-alpha;
 }
@@ -334,12 +338,18 @@ textarea {
 .copy ul {
 	padding:0;
 	margin:0 0 5.33pt;
+    font-size: 13pt;
+    line-height: 17pt;
 }
 .copy p+ul {
 	margin:9pt 0 5.33pt 0;
 }
 .one ul a {
 	text-decoration:underline;
+}
+.two + .one {
+	border-top:1px dotted black;
+	width:100%;
 }
 .copy p {
 	-moz-column-break-inside:avoid;
