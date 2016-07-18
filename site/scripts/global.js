@@ -25,7 +25,7 @@ var img = new Image();
 	img.id = "imageTransition";
 
 img.onload = function(){
-	if(context) createHistogram();
+	if(img.complete && context) createHistogram();
 	if(hero){
 		hero.appendChild(img);
 		img.style.display = "none";
