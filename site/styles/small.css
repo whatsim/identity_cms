@@ -121,22 +121,22 @@ a:hover {
 	-webkit-transition: color .4s ease-in;
 	transition: color .4s ease-in;*/
 }
-#nav ul a:hover {
+#nav ul a:hover, .one ul a:hover {
 	background:#333;
 }
-#nav ul {
+#nav ul, .one ul {
 	padding:5.333pt 0;
 }
-#nav li {
+#nav li, .one li {
 	display: inline-block;
 	margin-right: 5px;	
 }
-#nav ul a {
+#nav ul a, .one ul a {
 	color:white;
 	background: #555;
 	padding:2.667pt 5.33pt;
 }
-#nav ul.categories a {
+#nav ul.categories a, .one ul a {
 	background: black;
 }
 #nav ul.categories {
@@ -153,8 +153,7 @@ a:hover {
 	clear:both;
 }
 .one {
-	margin-left: -5px;
-	padding:5px 0 0;
+	padding:0 10px 10px;
 	display: block;
 	float:left;
 }
@@ -364,9 +363,6 @@ iframe {
 }
 .copy a {
 	font-weight:400;
-}
-#spacer {
-	height:19px;
 }
 .up, .down {
 	cursor:pointer;
