@@ -1,5 +1,5 @@
 /* Small caps */
-.small-caps {font-family:Inconsolata, monospace;}
+.small-caps {font-family:Inconsolata, monospace;line-height: 1em;font-size: 1.1em;}
 
 /* Double quote (") marks */
 .pull-double{margin-left:-.38em}
