@@ -337,12 +337,9 @@ textarea {
 }
 .copy ul {
 	padding:0;
-	margin:0 0 5.33pt;
+	margin:5.33pt 0;
     font-size: 13pt;
     line-height: 17pt;
-}
-.copy p+ul {
-	margin:9pt 0 5.33pt 0;
 }
 .one ul a {
 	text-decoration:underline;
