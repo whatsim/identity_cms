@@ -1,9 +1,9 @@
 html {
-	font-family:"Din Text Pro Regular", Din, Verdana, sans-serif;
+	font-family:"din-2014", Din, Verdana, sans-serif;
 	font-size:10pt;
-	line-height:12pt;
+	line-height:13pt;
 	font-weight:400;
-	letter-spacing: -.5px
+	letter-spacing: -.5px;
 }
 body {
 	padding:0;
@@ -89,7 +89,7 @@ body {
 	font-weight:400;
 	margin:0;
 	letter-spacing:.75px;
-	font-family:"Din Text Pro Regular", Din, Verdana, sans-serif;
+	font-family:"din-2014", Din, Verdana, sans-serif;
 }
 p {
 	padding:0;
@@ -336,7 +336,8 @@ textarea {
 	-moz-column-break-inside:avoid;
 	-webkit-column-break-inside:avoid;
 	column-break-inside:avoid;
-	font-family:"Din Text Pro Light", Din, Verdana, sans-serif;
+	font-family:"din-2014", Din, Verdana, sans-serif;
+	font-weight: 100;
 	font-size:10pt;
 	line-height: 13.33pt;
 	margin:0;

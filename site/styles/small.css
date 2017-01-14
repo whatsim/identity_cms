@@ -1,9 +1,9 @@
 html {
-	font-family:"Din Text Pro Regular", Din, Verdana, sans-serif;
-	font-size:10pt;
+	font-family:"din-2014", Din, Verdana, sans-serif;
+	font-size:9pt;
 	line-height:12pt;
 	font-weight:400;
-	letter-spacing: -.5px
+	letter-spacing: -.5px;
 }
 body {
 	padding:0 0 200px;
@@ -30,6 +30,7 @@ body {
 	padding-top:50px;
 	font-size:10.66pt;
 	line-height:10.66pt;
+	-webkit-text-size-adjust: 140%;
 }
 #content {
 	padding-top:20px;
@@ -81,7 +82,7 @@ body {
 	font-weight:400;
 	margin:0 0 2.66px;
 	letter-spacing:.75px;
-	font-family:"Din Text Pro Regular", Din, Verdana, sans-serif;
+	font-family:"din-2014", Din, Verdana, sans-serif;
 }
 p {
 	padding:0;
@@ -194,6 +195,7 @@ a:hover {
 	border-bottom:1px dotted black;
 	margin:0 0 20px 0;
 	padding:15px 0 20px 0;
+	-webkit-text-size-adjust: 140%;
 }
 #listTitle {
 	margin:0 0 10px 0;
@@ -203,7 +205,7 @@ a:hover {
 .copy {
 	font-weight:400;
 	margin-bottom: 10px;
-	-webkit-text-size-adjust: 150%;
+	-webkit-text-size-adjust: 140%;
 }
 .clear {
 	clear:both;
@@ -347,9 +349,10 @@ textarea {
 	-moz-column-break-inside:avoid;
 	-webkit-column-break-inside:avoid;
 	column-break-inside:avoid;
-	font-family:"Din Text Pro Light", Din, Verdana, sans-serif;
-	font-size:11pt;
-	line-height: 15pt;
+	font-family:"din-2014", Din, Verdana, sans-serif;
+	font-weight:100;
+	font-size:14pt;
+	line-height: 18pt;
 	margin:0;
 	padding:0 0 8pt;
 }

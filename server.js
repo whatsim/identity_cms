@@ -169,10 +169,12 @@ app.get('*', function(req, res){
 	res.render("error", { status:404, "pageTitle": "404", 'user': req.user })
 })
 
-
 // all the text transforms to be applied to body copy
 function processBodyCopy(copy){
-	return typeset(md(copy))
+	var options = {
+		disable: ['ligatures'], // array of features to disable
+	};
+	return typeset(md(copy),options)
 }
 
 // processes the contentStore json into something easily useable by the routes
